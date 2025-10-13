@@ -66,26 +66,37 @@ Here's a simple example to get you started with forecasting:
 ⚠️ In our study, we take the **median** across 256 samples to produce a point forecast. This tutorial previously used the **mean** but has now been updated.
 
 ```python
+# Note: For Apple Silicon (M4/M3/M2/M1), enable MPS fallback BEFORE importing torch
+# import os
+# os.environ['PYTORCH_ENABLE_MPS_FALLBACK'] = '1'
+
 import torch
 from toto.data.util.dataset import MaskedTimeseries
 from toto.inference.forecaster import TotoForecaster
 from toto.model.toto import Toto
+from toto.model.util import get_device
 
 # Load the pre-trained model
 toto = Toto.from_pretrained('Datadog/Toto-Open-Base-1.0')
-toto.to('cuda')  # Move to GPU
+
+# Automatically detect and use the best available device (CUDA > MPS > CPU)
+device = get_device()
+print(f"Using device: {device}")
+toto.to(device)
 
 # Optionally compile the model for faster inference
-toto.compile()  # Uses Torch's JIT compilation for better performance
+# Note: torch.compile may have limited support on MPS (Apple Silicon)
+if device.type != "mps":
+    toto.compile()  # Uses Torch's JIT compilation for better performance
 
 forecaster = TotoForecaster(toto.model)
 
 # Prepare your input time series (channels, time_steps)
-input_series = torch.randn(7, 4096).to('cuda')  # Example with 7 variables and 4096 timesteps
+input_series = torch.randn(7, 4096).to(device)  # Example with 7 variables and 4096 timesteps
 
 # Prepare timestamp information (optional, but expected by API; not used by the current model release)
-timestamp_seconds = torch.zeros(7, 4096).to('cuda')
-time_interval_seconds = torch.full((7,), 60*15).to('cuda')  # 15-minute intervals
+timestamp_seconds = torch.zeros(7, 4096).to(device)
+time_interval_seconds = torch.full((7,), 60*15).to(device)  # 15-minute intervals
 
 # Create a MaskedTimeseries object
 inputs = MaskedTimeseries(

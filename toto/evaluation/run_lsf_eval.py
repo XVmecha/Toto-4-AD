@@ -35,6 +35,7 @@ from toto.evaluation.lsf.lsf_datasets import LSFDatasetName
 from toto.evaluation.lsf.lsf_evaluator import LSFEvaluator
 from toto.inference.gluonts_predictor import Multivariate
 from toto.model.toto import Toto
+from toto.model.util import get_device
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -168,9 +169,18 @@ def evaluate_checkpoint(task: EvalTask) -> pd.DataFrame:
 
     model = Toto.from_pretrained(task.checkpoint_path)
 
-    model.to("cuda" if torch.cuda.is_available() else "cpu")
+    device = get_device()
+    logger.info(f"Using device: {device}")
+    model.to(device)
     torch.set_float32_matmul_precision("high")
-    torch.compile(model, mode="max-autotune")
+
+    # Note: torch.compile with mode="max-autotune" may not be fully supported on MPS yet
+    # Using default compile mode for better compatibility
+    if device.type != "mps":
+        torch.compile(model, mode="max-autotune")
+    else:
+        logger.info("Skipping torch.compile for MPS device due to limited support")
+
     model.eval()
 
     evaluator = LSFEvaluator(
