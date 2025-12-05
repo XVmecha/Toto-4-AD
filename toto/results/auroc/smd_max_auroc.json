@@ -1,0 +1,15 @@
+{
+  "dataset": "smd",
+  "aggregation": "max",
+  "context_length": 512,
+  "fit_stride": 32,
+  "detect_stride": 32,
+  "threshold_percentile": 95.0,
+  "threshold": 13.10815143585205,
+  "n_samples": 20272,
+  "n_normal": 20159,
+  "n_anomaly": 113,
+  "auroc": 0.500735963251443,
+  "threshold_at_95_specificity": 13.061904907226562,
+  "tpr_at_95_specificity": 0.035398230088495575
+}

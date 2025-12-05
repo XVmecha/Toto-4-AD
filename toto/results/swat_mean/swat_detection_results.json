@@ -1,0 +1,22 @@
+{
+  "dataset": "SWaT",
+  "model": "Toto-Open-Base-1.0",
+  "configuration": {
+    "context_length": 512,
+    "aggregation": "mean",
+    "threshold_percentile": 95.0,
+    "fit_stride": 32,
+    "detect_stride": 1
+  },
+  "threshold": 4.2900309562683105,
+  "metrics": {
+    "tp": 5217,
+    "fp": 37571,
+    "fn": 115,
+    "tn": 1576,
+    "precision": 0.12192670842292232,
+    "recall": 0.9784321080270068,
+    "f1": 0.21683291770573565,
+    "accuracy": 0.1527237572787158
+  }
+}

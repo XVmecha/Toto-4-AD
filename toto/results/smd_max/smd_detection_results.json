@@ -1,0 +1,332 @@
+{
+  "dataset": "SMD (Server Machine Dataset)",
+  "model": "Toto-Open-Base-1.0",
+  "configuration": {
+    "context_length": 512,
+    "aggregation": "max",
+    "threshold_percentile": 95.0,
+    "fit_stride": 32,
+    "detect_stride": 32
+  },
+  "threshold": 13.566778182983398,
+  "overall_metrics": {
+    "tp": 5,
+    "fp": 47,
+    "fn": 94,
+    "tn": 1478,
+    "precision": 0.09615384615384616,
+    "recall": 0.050505050505050504,
+    "f1": 0.0662251655629139,
+    "accuracy": 0.9131773399014779
+  },
+  "per_machine_metrics": [
+    {
+      "machine_id": 0,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 58,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 1.0
+    },
+    {
+      "machine_id": 1,
+      "tp": 0,
+      "fp": 0,
+      "fn": 2,
+      "tn": 56,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 0.9655172413793104
+    },
+    {
+      "machine_id": 2,
+      "tp": 0,
+      "fp": 0,
+      "fn": 6,
+      "tn": 52,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 0.896551724137931
+    },
+    {
+      "machine_id": 3,
+      "tp": 0,
+      "fp": 0,
+      "fn": 6,
+      "tn": 52,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 0.896551724137931
+    },
+    {
+      "machine_id": 4,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 58,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 1.0
+    },
+    {
+      "machine_id": 5,
+      "tp": 0,
+      "fp": 0,
+      "fn": 2,
+      "tn": 56,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 0.9655172413793104
+    },
+    {
+      "machine_id": 6,
+      "tp": 0,
+      "fp": 5,
+      "fn": 0,
+      "tn": 53,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 0.9137931034482759
+    },
+    {
+      "machine_id": 7,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 58,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 1.0
+    },
+    {
+      "machine_id": 8,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 58,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 1.0
+    },
+    {
+      "machine_id": 9,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 58,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 1.0
+    },
+    {
+      "machine_id": 10,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 58,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 1.0
+    },
+    {
+      "machine_id": 11,
+      "tp": 0,
+      "fp": 0,
+      "fn": 26,
+      "tn": 32,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 0.5517241379310345
+    },
+    {
+      "machine_id": 12,
+      "tp": 0,
+      "fp": 0,
+      "fn": 28,
+      "tn": 30,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 0.5172413793103449
+    },
+    {
+      "machine_id": 13,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 58,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 1.0
+    },
+    {
+      "machine_id": 14,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 58,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 1.0
+    },
+    {
+      "machine_id": 15,
+      "tp": 0,
+      "fp": 5,
+      "fn": 0,
+      "tn": 53,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 0.9137931034482759
+    },
+    {
+      "machine_id": 16,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 58,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 1.0
+    },
+    {
+      "machine_id": 17,
+      "tp": 3,
+      "fp": 2,
+      "fn": 11,
+      "tn": 42,
+      "precision": 0.6,
+      "recall": 0.21428571428571427,
+      "f1": 0.3157894736842105,
+      "accuracy": 0.7758620689655172
+    },
+    {
+      "machine_id": 18,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 58,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 1.0
+    },
+    {
+      "machine_id": 19,
+      "tp": 0,
+      "fp": 21,
+      "fn": 0,
+      "tn": 37,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 0.6379310344827587
+    },
+    {
+      "machine_id": 20,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 58,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 1.0
+    },
+    {
+      "machine_id": 21,
+      "tp": 0,
+      "fp": 1,
+      "fn": 2,
+      "tn": 55,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 0.9482758620689655
+    },
+    {
+      "machine_id": 22,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 58,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 1.0
+    },
+    {
+      "machine_id": 23,
+      "tp": 0,
+      "fp": 1,
+      "fn": 0,
+      "tn": 57,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 0.9827586206896551
+    },
+    {
+      "machine_id": 24,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 58,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 1.0
+    },
+    {
+      "machine_id": 25,
+      "tp": 0,
+      "fp": 11,
+      "fn": 0,
+      "tn": 47,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 0.8103448275862069
+    },
+    {
+      "machine_id": 26,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 58,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 1.0
+    },
+    {
+      "machine_id": 27,
+      "tp": 2,
+      "fp": 1,
+      "fn": 11,
+      "tn": 44,
+      "precision": 0.6666666666666666,
+      "recall": 0.15384615384615385,
+      "f1": 0.25,
+      "accuracy": 0.7931034482758621
+    }
+  ]
+}
