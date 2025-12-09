@@ -1,255 +1,287 @@
-# Toto - Time Series Optimized Transformer for Observability
-[Paper](https://arxiv.org/abs/2505.14766) | [Toto Model Card](https://huggingface.co/Datadog/Toto-Open-Base-1.0) | [BOOM Dataset Card](https://huggingface.co/datasets/Datadog/BOOM) | [Blogpost](https://www.datadoghq.com/blog/ai/toto-boom-unleashed/)
+# TOTO Anomaly Detection
 
-Toto is a foundation model for multivariate time series forecasting with a focus on observability metrics. This model leverages innovative architectural designs to efficiently handle the high-dimensional, complex time series that are characteristic of observability data.
+**Zero-shot anomaly detection for multivariate time series using TOTO's learned representations.**
 
-This repository also hosts the code for evaluating time series models on BOOM (**B**enchmark **o**f **O**bservability **M**etrics), a large-scale forecasting dataset composed of real-world observability data.
+---
 
-## Table of Contents
-- [Toto model](#toto-model)
-  - [Features](#features)
-  - [Model Weights](#model-weights)
-  - [Installation](#installation)
-  - [Quick Start](#quick-start)
-  - [Tutorials](#tutorials)
-  - [Training Data](#training-data)
-  - [Evaluation](#evaluation)
-    - [LSF Evaluation](#lsf-evaluation)
-    - [GIFT-Eval Evaluation](#gift-eval-evaluation)
-    - [BOOM Evaluation](#boom-evaluation)
-  - [Requirements](#requirements)
-- [BOOM (Benchmark of Observability Metrics)](#boom-benchmark-of-observability-metrics)
-- [Citation](#citation)
-- [License](#license)
-- [Contributing](#contributing)
+## Overview
 
-## Toto model
+This module extends TOTO (Time Series Optimized Transformer for Observability) from a forecasting foundation model into a **zero-shot anomaly detection system**. The core insight: if TOTO has learned to accurately predict normal system behavior, then large prediction errors signal deviations from normality—i.e., anomalies.
 
-### Features
+### The Premise
 
-- **Zero-Shot Forecasting**: Perform forecasting without fine-tuning on your specific time series
-- **State-of-the-Art Performance**: Achieves top scores in benchmarks covering diverse time series forecasting tasks. This includes the established multi-domain benchmark [GIFT-Eval](https://huggingface.co/spaces/Salesforce/GIFT-Eval), as well as our own observability-focused benchmark
-[BOOM](https://huggingface.co/datasets/Datadog/BOOM).
-- **Multi-Variate Support**: Efficiently process multiple variables using Proportional Factorized Space-Time Attention
-- **Probabilistic Predictions**: Generate both point forecasts and uncertainty estimates using a Student-T mixture model
-- **High-Dimensional Support**: Handle time series with a large number of variables efficiently
-- **Decoder-Only Architecture**: Support for variable prediction horizons and context lengths
-- **Pre-trained on Massive Data**: Trained on over 2 trillion time series data points, the largest pretraining dataset for any open-weights time series foundation model to date.
+TOTO was pretrained on **one trillion time series data points** from observability metrics (infrastructure monitoring, application performance, cloud services). Through this extensive training, TOTO learned rich representations of normal operational patterns. We leverage these learned patterns to detect previously unseen anomalies **without task-specific training**.
 
+### The Approach
 
-### Model Weights
+We transform TOTO's probabilistic forecasts into anomaly scores through three key steps:
 
-Toto-Open, the open-weights release of Toto, is available on Hugging Face. Currently available checkpoints:
+1. **Error Scoring**: Compute Negative Log-Likelihood (NLL) of observations under TOTO's predicted distributions
+2. **Error Aggregation**: Combine per-variate errors into scalar anomaly scores (Mean or Max)
+3. **Threshold Selection**: Establish decision boundaries using only normal data (95th percentile)
 
-| Checkpoint | Parameters | Notes |
-|------------|------------|-------|
-| [Toto-Open-Base-1.0](https://huggingface.co/Datadog/Toto-Open-Base-1.0) | 151M | The initial open relase of Toto. Achieves state-of-the-art performance on both general-purpose and observability-focused benchmarking tasks, as described in our paper. |
+**Key Advantage**: This is a true zero-shot approach—we never use anomaly data during threshold calibration, enabling detection of novel anomaly types.
 
+---
 
+## Quick Start
 
 ### Installation
 
 ```bash
-# Optional: create a virtual environment
-python -m venv .venv
-source .venv/bin/activate
-
-# Install via pip
+# Install TOTO with anomaly detection support
 pip install toto-ts
+
+# Or install from source
+git clone https://github.com/DataDog/Toto-4-AD.git
+cd Toto-4-AD
+pip install -e .
 ```
-For optimal inference speed, it's recommended to install [xformers](https://github.com/facebookresearch/xformers?tab=readme-ov-file#installing-xformers) and [flash-attention](https://github.com/Dao-AILab/flash-attention?tab=readme-ov-file#installation-and-features) as well.
 
-### Quick Start
-
-Here's a simple example to get you started with forecasting:
-
-⚠️ In our study, we take the **median** across 256 samples to produce a point forecast. This tutorial previously used the **mean** but has now been updated.
+### Basic Usage
 
 ```python
-# Note: For Apple Silicon (M4/M3/M2/M1), enable MPS fallback BEFORE importing torch
-# import os
-# os.environ['PYTORCH_ENABLE_MPS_FALLBACK'] = '1'
-
 import torch
-from toto.data.util.dataset import MaskedTimeseries
-from toto.inference.forecaster import TotoForecaster
 from toto.model.toto import Toto
-from toto.model.util import get_device
+from toto.anomaly_detection import AnomalyDetector
 
-# Load the pre-trained model
+# Load pretrained TOTO model
 toto = Toto.from_pretrained('Datadog/Toto-Open-Base-1.0')
-
-# Automatically detect and use the best available device (CUDA > MPS > CPU)
-device = get_device()
-print(f"Using device: {device}")
 toto.to(device)
+toto.eval()
 
-# Optionally compile the model for faster inference
-# Note: torch.compile may have limited support on MPS (Apple Silicon)
-if device.type != "mps":
-    toto.compile()  # Uses Torch's JIT compilation for better performance
-
-forecaster = TotoForecaster(toto.model)
-
-# Prepare your input time series (channels, time_steps)
-input_series = torch.randn(7, 4096).to(device)  # Example with 7 variables and 4096 timesteps
-
-# Prepare timestamp information (optional, but expected by API; not used by the current model release)
-timestamp_seconds = torch.zeros(7, 4096).to(device)
-time_interval_seconds = torch.full((7,), 60*15).to(device)  # 15-minute intervals
-
-# Create a MaskedTimeseries object
-inputs = MaskedTimeseries(
-    series=input_series,
-    padding_mask=torch.full_like(input_series, True, dtype=torch.bool),
-    id_mask=torch.zeros_like(input_series),
-    timestamp_seconds=timestamp_seconds,
-    time_interval_seconds=time_interval_seconds,
+# Create anomaly detector
+detector = AnomalyDetector(
+    model=toto.model,
+    context_length=512,
+    aggregation='mean',  # 'mean' or 'max'
+    threshold_percentile=95.0,
 )
 
-# Generate forecasts for the next 336 timesteps
-forecast = forecaster.forecast(
-    inputs,
-    prediction_length=336,
-    num_samples=256,  # Number of samples for probabilistic forecasting
-    samples_per_batch=256,  # Control memory usage during inference
+# Fit on normal training data (no anomalies)
+detector.fit(train_series, stride=32)  # train_series: (batch, variates, timesteps)
+print(f"Threshold: {detector.threshold:.4f}")
+
+# Detect anomalies in test data
+is_anomaly, scores = detector.detect(
+    test_series,
+    stride=1,
+    return_scores=True
 )
 
-# Access results
-median_prediction = forecast.median  # Point forecasts
-prediction_samples = forecast.samples  # Probabilistic samples
-lower_quantile = forecast.quantile(0.1)  # 10th percentile for lower confidence bound
-upper_quantile = forecast.quantile(0.9)  # 90th percentile for upper confidence bound
+# Results:
+# - is_anomaly: (batch, timesteps) binary predictions
+# - scores: (batch, timesteps) continuous anomaly scores
 ```
 
-### Tutorials
+---
 
-For a comprehensive guide on using Toto for time series forecasting, check out our tutorial notebooks:
+## Datasets & Preprocessing
 
-- [Basic Inference Tutorial](toto/notebooks/inference_tutorial.ipynb): Learn how to load the model and make forecasts
+We evaluate on two benchmark multivariate time series anomaly detection datasets:
 
-### Pre-Training Data
+### 1. SWaT (Secure Water Treatment)
 
-Toto was trained on a massive and diverse mixture of time series datasets:
+**Domain**: Industrial control systems
+**Sensors**: 51 variates (flow rates, tank levels, valve states)
+**Training**: 7 days normal operation (496,800 timesteps)
+**Test**: 4 days with 36 cyber-physical attacks (449,919 timesteps, ~12% anomalous)
+**Anomalies**: Manipulated sensor readings, unauthorized valve controls
 
-#### Observability Data
-
-The largest portion of pretraining data comes from a dataset of approximately 1 trillion time series points collected from Datadog metrics. These metrics are generated from Datadog's monitoring of internal systems, and **do not** include any customer data. They cover a diverse array of software stacks and types of services, and span wide variety of domains within observability, including application performance, infrastructure, networking, security, databases, and more.
-
-#### Public Datasets
-
-To improve the performance of Toto on general-purpose time series forecasting across many domains, we include publicly available datasets:
-- [GiftEval Pretrain](https://huggingface.co/datasets/Salesforce/GiftEvalPretrain)
-- [Chronos pretraining data](https://huggingface.co/datasets/autogluon/chronos_datasets) (Note: only a subset of this dataset was used to avoid leakage with the GiftEval benchmark)
-
-#### Synthetic Data
-To improve robustness, approximately 1/3 of the pretraining data mix consists of synthetically-generated time series.
-
-
-### Evaluation
-Toto has been rigorously evaluated on multiple benchmarks, including both general-purpose datasets and observability-focused datasets like BOOM. Below, we provide instructions for reproducing our evaluation results.
-
-#### LSF Evaluation
-
-To reproduce our results on the LSF datasets, follow these steps:
-
-##### Downloading the Datasets
-
-The LSF evaluation requires three datasets: ETT, Electricity, and Weather. You can download them from the [Time-Series-Library repository](https://github.com/thuml/Time-Series-Library). Follow the instructions in the [repository](https://github.com/thuml/Time-Series-Library#:~:text=r%20requirements.txt-,Prepare,-Data.%20You%20can) to obtain the following already pre-processed datasets:
-
-- **[ETT (Electricity Transformer Temperature)](https://drive.google.com/file/d/1bnrv7gpn27yO54WJI-vuXP5NclE5BlBx/view?usp=drive_link)**: Includes four subsets: ETTh1, ETTh2, ETTm1, and ETTm2.
-- **[Electricity](https://drive.google.com/file/d/1FHH0S3d6IK_UOpg6taBRavx4MragRLo1/view?usp=drive_link)**
-- **[Weather](https://drive.google.com/file/d/1nXdMIJ7K201Bx3IBGNiaNFQ6FzeDEzIr/view?usp=drive_link)**
-
-After downloading, ensure the datasets are placed in the `data/lsf_datasets/` directory within the repository, with the following structure:
-
-```
-data/
-└── lsf_datasets/
-  ├── ETT-small/
-  ├── electricity/
-  └── weather/
-```
-
-##### Running the Evaluation Script
-
-Once the datasets are set up, you can run the LSF evaluation script as follows to reproduce our results:
+**Preprocess SWaT:**
 ```bash
-export CUBLAS_WORKSPACE_CONFIG=:4096:8  # For reproducible GPU results
-export PYTHONPATH="$(pwd):$(pwd)/toto:$PYTHONPATH"  # Add current and "toto" dirs to Python module search path
-python toto/evaluation/run_lsf_eval.py \
-    --datasets ETTh1 \
-    --context-length 2048 \
-    --eval-stride 1 \
-    --checkpoint-path [CHECKPOINT-NAME-OR-DIR]
+# Download SWaT dataset and extract to toto/data/SWaT.A1 & A2_Dec 2015/
+# Then preprocess:
+python preprocess_swat.py \
+    --data_dir "toto/data/SWaT.A1 & A2_Dec 2015/Physical" \
+    --output_dir toto/data/preprocessed_datasets/swat \
+    --downsample 1
+
+# Output:
+#   - swat_train.pt (normal operations)
+#   - swat_test.pt (with attacks)
+#   - swat_train_metadata.csv
+#   - swat_test_metadata.csv
 ```
 
+### 2. SMD (Server Machine Dataset)
 
-To see all available options for the evaluation script, you can use the `--help` flag:
+**Domain**: Server monitoring
+**Sensors**: 38 variates per machine (CPU, memory, disk I/O, network)
+**Machines**: 28 independent servers
+**Training**: ~23,687 timesteps per machine (all normal)
+**Test**: ~23,687 timesteps per machine (~4.3% anomalous)
+**Anomalies**: Hardware failures, configuration errors, resource exhaustion
+
+**Preprocess SMD:**
+```bash
+# Download SMD dataset and extract to toto/data/ServerMachineDataset/
+# Then preprocess:
+python preprocess_smd.py \
+    --data_dir toto/data/ServerMachineDataset \
+    --output_dir toto/data/preprocessed_smd_1x \
+    --downsample 1
+
+# Output:
+#   - smd_train.pt (28 machines, normal)
+#   - smd_test.pt (28 machines, with anomalies)
+#   - smd_train_metadata.json
+#   - smd_test_metadata.json
+```
+
+---
+
+## Running Anomaly Detection
+
+### SWaT Detection
 
 ```bash
-python toto/evaluation/run_lsf_eval.py --help
+# Mean aggregation (system-wide anomalies)
+python run_swat_anomaly_detection.py \
+    --data_dir toto/data/preprocessed_datasets/swat \
+    --output_dir toto/results/swat_mean \
+    --aggregation mean \
+    --context_length 512 \
+    --threshold_percentile 95.0 \
+    --fit_stride 32 \
+    --detect_stride 1
+
+# Max aggregation (localized anomalies)
+python run_swat_anomaly_detection.py \
+    --data_dir toto/data/preprocessed_datasets/swat \
+    --output_dir toto/results/swat_max \
+    --aggregation max \
+    --detect_stride 1
+
+# Results saved to:
+#   - swat_detection_results.json (metrics: precision, recall, F1, AUROC)
+#   - swat_anomaly_detection_results.png (visualization)
+#   - swat_score_distribution.png (score histogram)
 ```
 
-##### Expected Results
-The script evaluates Toto's performance using Mean Absolute Error (MAE) and Mean Squared Error (MSE) across the specified datasets, context lengths, and prediction lengths. It displays a detailed table of results for each prediction length, along with a summary table that averages the results across prediction lengths for each dataset.
+### SMD Detection
 
+```bash
+# Mean aggregation
+python run_smd_anomaly_detection.py \
+    --data_dir toto/data/preprocessed_smd_1x \
+    --output_dir toto/results/smd_mean \
+    --aggregation mean \
+    --context_length 512 \
+    --threshold_percentile 95.0 \
+    --fit_stride 32 \
+    --detect_stride 32 \
+    --plot_machines 0 5 10
 
-To reproduce the results presented in the paper, use the default arguments while setting `--eval-stride 1` and specifying all datasets with `--datasets ETTh1 ETTh2 ETTm1 ETTm2 weather electricity`.
+# Max aggregation
+python run_smd_anomaly_detection.py \
+    --data_dir toto/data/preprocessed_smd_1x \
+    --output_dir toto/results/smd_max \
+    --aggregation max \
+    --detect_stride 32 \
+    --plot_machines 0 5 10
 
-#### GIFT-Eval Evaluation
-
-To reproduce our results on the GIFT-Eval benchmark, we provide a dedicated notebook:
-
-- [GIFT-Eval Evaluation Notebook](toto/evaluation/gift_eval/toto.ipynb): Step-by-step instructions for running Toto on the GIFT-Eval benchmark and reproducing the reported results.
-
-#### BOOM Evaluation
-
-For evaluating Toto on the BOOM (Benchmark of Observability Metrics) dataset, refer to:
-
-- [BOOM Evaluation Notebook](boom/notebooks/toto.ipynb): Example workflow for running Toto on the BOOM dataset.
-- [BOOM README](boom/README.md): Detailed instructions and scripts for benchmarking on BOOM.
-
-These resources provide all necessary steps to run and reproduce BOOM evaluation results with Toto.
-
-### Requirements
-
-- Python 3.10+
-- PyTorch 2.5+
-- CUDA-capable device (Ampere generation or newer recommended for optimal performance)
-
-## BOOM (Benchmark of Observability Metrics)
-
-**BOOM** (**B**enchmark **o**f **O**bservability **M**etrics) is a large-scale, real-world time series dataset designed for evaluating models on forecasting tasks in complex observability environments.
-Composed of real-world metrics data collected from Datadog, a leading observability platform, the benchmark captures the irregularity, structural complexity, and heavy-tailed statistics typical of production observability data. Unlike synthetic or curated benchmarks, BOOM reflects the full diversity and unpredictability of operational signals observed in distributed systems, covering infrastructure, networking, databases, security, and application-level metrics.
-
-Note: the metrics comprising BOOM were generated from internal monitoring of pre-production environments, and **do not** include any customer data. 
-
-For more information on the dataset, including details on its preparation and statistical properties, see the [dataset card](https://huggingface.co/datasets/Datadog/BOOM) in Hugging Face.
-
-For example evaluations of different time series models on the BOOM dataset, see the [boom](boom) folder in this repository.
-
-## Citation
-
-If you use Toto in your research, please cite our work:
-
-```bibtex
-@misc{cohen2025timedifferentobservabilityperspective,
-      title={This Time is Different: An Observability Perspective on Time Series Foundation Models}, 
-      author={Ben Cohen and Emaad Khwaja and Youssef Doubli and Salahidine Lemaachi and Chris Lettieri and Charles Masson and Hugo Miccinilli and Elise Ramé and Qiqi Ren and Afshin Rostamizadeh and Jean Ogier du Terrail and Anna-Monica Toon and Kan Wang and Stephan Xie and Zongzhe Xu and Viktoriya Zhukova and David Asker and Ameet Talwalkar and Othmane Abou-Amal},
-      year={2025},
-      eprint={2505.14766},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG},
-      url={https://arxiv.org/abs/2505.14766}, 
-}
+# Results saved to:
+#   - smd_detection_results.json (overall + per-machine metrics)
+#   - smd_machine_{0,5,10}_anomaly_detection.png
+#   - smd_machine_{0,5,10}_score_distribution.png
+#   - Precision, Recall, F1 outputted in terminal
 ```
 
-## License
-Unless explicitly stated otherwise all files in this repository are licensed under the Apache-2.0 License - see [LICENSE](LICENSE) file for details.
+---
 
-This product includes software developed at Datadog (https://www.datadoghq.com/) Copyright 2025 Datadog, Inc.
+## Threshold-Agnostic Evaluation: AUROC
 
-## Contributing
+**Problem**: Threshold-based metrics (Precision, Recall, F1) depend heavily on the chosen threshold. Distribution shift between calibration and evaluation data can make fixed thresholds ineffective.
 
-We welcome contributions! Please check out our [contributing guidelines](CONTRIBUTING.md) to get started.
+**Solution**: AUROC (Area Under ROC Curve) measures the model's ability to **rank** anomalies above normal data, independent of any threshold choice.
+
+### Computing AUROC
+
+```bash
+# SWaT with mean aggregation
+python compute_auroc.py swat mean
+
+# SWaT with max aggregation
+python compute_auroc.py swat max
+
+# SMD with mean aggregation
+python compute_auroc.py smd mean
+
+# SMD with max aggregation
+python compute_auroc.py smd max
+
+# Results saved to:
+#   - toto/results/auroc/{dataset}_{aggregation}_auroc.json
+```
+
+### Interpreting AUROC
+
+- **AUROC = 1.0**: Perfect ranking—all anomalies scored higher than all normal points
+- **AUROC = 0.5**: Random performance—model cannot distinguish anomalies from normal
+- **AUROC < 0.5**: Inverted ranking—model scores anomalies lower than normal (systematic failure)
+
+**Diagnostic Value**: AUROC reveals whether the model has the fundamental capacity to detect anomalies:
+- **High AUROC, Low F1**: Threshold-setting failure → Try adaptive thresholding
+- **AUROC ≈ 0.5**: Ranking failure → Requires domain fine-tuning or different approach
+
+---
+
+## Results Summary
+
+### SWaT: Strong Ranking, Threshold Challenges
+
+| Aggregation | AUROC | Precision | Recall | F1 | Interpretation |
+|-------------|-------|-----------|--------|----|----|
+| Mean | **86.3%** | 12.2% | 97.8% | 21.7% | ✓ Model ranks anomalies correctly |
+| Max | **80.0%** | 11.8% | 97.2% | 21.0% | ⚠ Distribution shift causes threshold mismatch |
+
+**Key Findings**:
+- TOTO successfully learned transferable patterns from observability data to industrial control systems
+- High AUROC demonstrates zero-shot transfer capability
+- Low F1 due to distribution shift between calibration and evaluation sets (threshold too low)
+- **Conclusion**: Threshold-setting failure, not ranking failure
+
+### SMD: Fundamental Ranking Failure
+
+| Aggregation | AUROC | Precision | Recall | F1 | Interpretation |
+|-------------|-------|-----------|--------|----|----|
+| Mean | **53.0%** | 1.7% | 6.1% | 2.7% | ✗ Random performance |
+| Max | **50.1%** | 9.6% | 5.1% | 6.6% | ✗ Literally a coin flip |
+
+**Key Findings**:
+- AUROC ≈ 0.5 indicates model cannot distinguish anomalies from normal data
+- Root cause: **Inverted separation**—anomalies are MORE predictable than normal operations
+- Server anomalies (crashes, saturation) manifest as simple patterns (flatlines, zeros)
+- Normal operations exhibit complex, multi-modal behavior
+- **Conclusion**: Core assumption "anomalous = unpredictable" does not hold for SMD
+
+---
+
+## Design Choices & Trade-offs
+
+### Error Aggregation Strategies
+
+**Mean Aggregation**: $s_t = \frac{1}{M} \sum_{i=1}^M e_t^{(i)}$
+- Assumes system-wide anomalies affecting multiple sensors
+- Smooth, stable scores less sensitive to noise
+- Can dilute localized anomalies
+- **Best for**: Tightly coupled systems (SWaT: AUROC 86.3%)
+
+**Max Aggregation**: $s_t = \max_i e_t^{(i)}$
+- Detects sensor-specific anomalies
+- High sensitivity to localized failures
+- More prone to false positives from noise
+- **Best for**: Independent components where single failures matter
+
+### Threshold Selection Methods
+
+**95th Percentile (Default)**:
+- Rationale: Upper bound of "normal variation" observed in calibration data
+- Conservative: Allows 5% of calibration scores to exceed threshold (accounts for noise)
+- Limitation: Assumes calibration and evaluation distributions match
+
+**Alternative Methods** (available in module):
+- Mean + k*std: Statistical outlier detection
+- Median Absolute Deviation (MAD): Robust to outliers
+- Adaptive online thresholds: Update threshold as distribution shifts (future work)
