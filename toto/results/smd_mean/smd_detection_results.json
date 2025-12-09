@@ -1,0 +1,332 @@
+{
+  "dataset": "SMD (Server Machine Dataset)",
+  "model": "Toto-Open-Base-1.0",
+  "configuration": {
+    "context_length": 512,
+    "aggregation": "mean",
+    "threshold_percentile": 95.0,
+    "fit_stride": 32,
+    "detect_stride": 16
+  },
+  "threshold": 3.3486242294311523,
+  "overall_metrics": {
+    "tp": 43,
+    "fp": 2478,
+    "fn": 666,
+    "tn": 37357,
+    "precision": 0.01705672352241174,
+    "recall": 0.06064880112834979,
+    "f1": 0.02662538699690403,
+    "accuracy": 0.9224546172059984
+  },
+  "per_machine_metrics": [
+    {
+      "machine_id": 0,
+      "tp": 0,
+      "fp": 99,
+      "fn": 0,
+      "tn": 1349,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 0.9316298342541437
+    },
+    {
+      "machine_id": 1,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 1448,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 1.0
+    },
+    {
+      "machine_id": 2,
+      "tp": 0,
+      "fp": 306,
+      "fn": 11,
+      "tn": 1131,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 0.7810773480662984
+    },
+    {
+      "machine_id": 3,
+      "tp": 0,
+      "fp": 296,
+      "fn": 0,
+      "tn": 1152,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 0.7955801104972375
+    },
+    {
+      "machine_id": 4,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 1448,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 1.0
+    },
+    {
+      "machine_id": 5,
+      "tp": 0,
+      "fp": 89,
+      "fn": 5,
+      "tn": 1354,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 0.9350828729281768
+    },
+    {
+      "machine_id": 6,
+      "tp": 1,
+      "fp": 203,
+      "fn": 20,
+      "tn": 1224,
+      "precision": 0.004901960784313725,
+      "recall": 0.047619047619047616,
+      "f1": 0.008888888888888889,
+      "accuracy": 0.8459944751381215
+    },
+    {
+      "machine_id": 7,
+      "tp": 7,
+      "fp": 35,
+      "fn": 364,
+      "tn": 1042,
+      "precision": 0.16666666666666666,
+      "recall": 0.018867924528301886,
+      "f1": 0.03389830508474576,
+      "accuracy": 0.7244475138121547
+    },
+    {
+      "machine_id": 8,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 1448,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 1.0
+    },
+    {
+      "machine_id": 9,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 1448,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 1.0
+    },
+    {
+      "machine_id": 10,
+      "tp": 0,
+      "fp": 5,
+      "fn": 3,
+      "tn": 1440,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 0.994475138121547
+    },
+    {
+      "machine_id": 11,
+      "tp": 0,
+      "fp": 1,
+      "fn": 4,
+      "tn": 1443,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 0.9965469613259669
+    },
+    {
+      "machine_id": 12,
+      "tp": 0,
+      "fp": 4,
+      "fn": 0,
+      "tn": 1444,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 0.9972375690607734
+    },
+    {
+      "machine_id": 13,
+      "tp": 1,
+      "fp": 43,
+      "fn": 34,
+      "tn": 1370,
+      "precision": 0.022727272727272728,
+      "recall": 0.02857142857142857,
+      "f1": 0.02531645569620253,
+      "accuracy": 0.9468232044198895
+    },
+    {
+      "machine_id": 14,
+      "tp": 0,
+      "fp": 11,
+      "fn": 3,
+      "tn": 1434,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 0.9903314917127072
+    },
+    {
+      "machine_id": 15,
+      "tp": 0,
+      "fp": 154,
+      "fn": 0,
+      "tn": 1294,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 0.893646408839779
+    },
+    {
+      "machine_id": 16,
+      "tp": 0,
+      "fp": 3,
+      "fn": 0,
+      "tn": 1445,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 0.9979281767955801
+    },
+    {
+      "machine_id": 17,
+      "tp": 7,
+      "fp": 57,
+      "fn": 24,
+      "tn": 1360,
+      "precision": 0.109375,
+      "recall": 0.22580645161290322,
+      "f1": 0.14736842105263157,
+      "accuracy": 0.944060773480663
+    },
+    {
+      "machine_id": 18,
+      "tp": 0,
+      "fp": 84,
+      "fn": 0,
+      "tn": 1364,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 0.9419889502762431
+    },
+    {
+      "machine_id": 19,
+      "tp": 0,
+      "fp": 416,
+      "fn": 0,
+      "tn": 1032,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 0.712707182320442
+    },
+    {
+      "machine_id": 20,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 1448,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 1.0
+    },
+    {
+      "machine_id": 21,
+      "tp": 0,
+      "fp": 353,
+      "fn": 9,
+      "tn": 1086,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 0.75
+    },
+    {
+      "machine_id": 22,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 1448,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 1.0
+    },
+    {
+      "machine_id": 23,
+      "tp": 0,
+      "fp": 0,
+      "fn": 151,
+      "tn": 1297,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 0.8957182320441989
+    },
+    {
+      "machine_id": 24,
+      "tp": 18,
+      "fp": 134,
+      "fn": 16,
+      "tn": 1280,
+      "precision": 0.11842105263157894,
+      "recall": 0.5294117647058824,
+      "f1": 0.1935483870967742,
+      "accuracy": 0.8964088397790055
+    },
+    {
+      "machine_id": 25,
+      "tp": 0,
+      "fp": 102,
+      "fn": 0,
+      "tn": 1346,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 0.9295580110497238
+    },
+    {
+      "machine_id": 26,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 1448,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "accuracy": 1.0
+    },
+    {
+      "machine_id": 27,
+      "tp": 9,
+      "fp": 83,
+      "fn": 22,
+      "tn": 1334,
+      "precision": 0.09782608695652174,
+      "recall": 0.2903225806451613,
+      "f1": 0.14634146341463417,
+      "accuracy": 0.9274861878453039
+    }
+  ]
+}

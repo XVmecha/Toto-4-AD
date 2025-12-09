@@ -1,0 +1,15 @@
+{
+  "dataset": "swat",
+  "aggregation": "max",
+  "context_length": 512,
+  "fit_stride": 32,
+  "detect_stride": 1,
+  "threshold_percentile": 95.0,
+  "threshold": 13.988950729370117,
+  "n_samples": 44479,
+  "n_normal": 39027,
+  "n_anomaly": 5452,
+  "auroc": 0.7997265273447934,
+  "threshold_at_95_specificity": 15.160639762878418,
+  "tpr_at_95_specificity": 0.5865737344093911
+}

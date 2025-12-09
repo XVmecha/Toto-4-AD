@@ -3,6 +3,7 @@
 # This product includes software developed at Datadog (https://www.datadoghq.com/)
 # Copyright 2025 Datadog, Inc.
 
+import os
 import warnings
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, List, Optional, TypeAlias, Union
@@ -12,6 +13,33 @@ from einops import rearrange
 from jaxtyping import Float, Int
 
 from ..model.attention import TimeWiseMultiheadAttention
+
+
+def get_device() -> torch.device:
+    """
+    Get the best available device for PyTorch operations.
+    Priority: CUDA > MPS (Apple Silicon) > CPU
+
+    For MPS devices, automatically enables CPU fallback for unsupported operations
+    like the gamma distribution sampling used in Student-T distributions.
+
+    Returns:
+        torch.device: The best available device
+    """
+    if torch.cuda.is_available():
+        return torch.device("cuda")
+    elif torch.backends.mps.is_available():
+        # Enable CPU fallback for unsupported MPS operations (e.g., gamma sampling)
+        # This is needed for Student-T distribution sampling
+        os.environ['PYTORCH_ENABLE_MPS_FALLBACK'] = '1'
+        warnings.warn(
+            "MPS device detected. Enabling CPU fallback for unsupported operations "
+            "(e.g., Student-T distribution sampling). Some operations may be slower.",
+            UserWarning
+        )
+        return torch.device("mps")
+    else:
+        return torch.device("cpu")
 
 if TYPE_CHECKING:
     from ..model.transformer import TransformerLayer  # Import only for type checking
