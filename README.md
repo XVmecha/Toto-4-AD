@@ -1,6 +1,6 @@
 # TOTO Anomaly Detection
 
-**Zero-shot anomaly detection for multivariate time series using TOTO's learned representations.**
+**Zero-shot anomaly detection for multivariate time series using TOTO**
 
 ---
 
@@ -256,6 +256,7 @@ python compute_auroc.py smd max
 - Normal operations exhibit complex, multi-modal behavior
 - **Conclusion**: Core assumption "anomalous = unpredictable" does not hold for SMD
 
+For more information about our experimentation please read blogpost_anomaly_detection.md
 ---
 
 ## Design Choices & Trade-offs
