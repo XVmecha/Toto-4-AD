@@ -22,6 +22,9 @@ We transform TOTO's probabilistic forecasts into anomaly scores through three ke
 
 **Key Advantage**: This is a true zero-shot approach—we never use anomaly data during threshold calibration, enabling detection of novel anomaly types.
 
+### Taking a quick look
+The anomaly detection code can be found in toto/anomaly_detection.
+
 ---
 
 ## Quick Start
@@ -29,11 +32,8 @@ We transform TOTO's probabilistic forecasts into anomaly scores through three ke
 ### Installation
 
 ```bash
-# Install TOTO with anomaly detection support
-pip install toto-ts
-
 # Or install from source
-git clone https://github.com/DataDog/Toto-4-AD.git
+git clone https://github.com/XVmecha/Toto-4-AD.git
 cd Toto-4-AD
 pip install -e .
 ```
