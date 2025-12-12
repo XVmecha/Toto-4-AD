@@ -293,6 +293,7 @@ More details on experimentation procedure and results can be found in blogpost_a
 -Try different error scoring metrics (MAE/MSE). Currently, Negative Log Likelihood is used.
 -Error diagnosis for SMD, Do anomalous datapoints score lower forecastin error than non-anomalous datapoints? Why can explain this behaviour?
 -Finetuning TOTO to further improve performance. Potentially, SOTA anomaly detection performance can be achieved on benchmark dataset by fine-tuning TOTO on domain relevant data.
+-Automatic threshold recalibaration based on last N timepoints can improve model resilience to calibration validation distribution shift and concequently improve zero-shot anomaly detection performance.
 
 Feel free to open an issue or email me at andreas@bacd.nl for suggestions and improvements.
 
