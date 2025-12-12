@@ -300,7 +300,7 @@ Feel free to open an issue or email me at andreas@bacd.nl for suggestions and im
 
 This project extends and builds upon the Toto repository (https://github.com/DataDog/toto), developed by the Datadog AI Research team. Core components, including model architecture and inference utilities, are adapted from their Apache-2.0 licensed implementation.
 
-- Original repository: https://github.com/DataDog/toto [attached_file:1]
+- Original repository: https://github.com/DataDog/toto
 - Associated paper: "This Time is Different: An Observability Perspective on Time Series Foundation Models" (arXiv:2505.14766) [attached_file:1]
-- License: Apache-2.0 (see [LICENSE](LICENSE) file) [attached_file:1]
+- License: Apache-2.0 (see [LICENSE](LICENSE) file)
 
