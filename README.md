@@ -231,32 +231,33 @@ python compute_auroc.py smd max
 
 ### SWaT: Strong Ranking, Threshold Challenges
 
-| Aggregation | AUROC | Precision | Recall | F1 | Interpretation |
-|-------------|-------|-----------|--------|----|----|
-| Mean | **86.3%** | 12.2% | 97.8% | 21.7% | ✓ Model ranks anomalies correctly |
-| Max | **80.0%** | 11.8% | 97.2% | 21.0% | ⚠ Distribution shift causes threshold mismatch |
+| Aggregation | AUROC | Precision | Recall | F1 | 
+|-------------|-------|-----------|--------|----|
+| Mean | **86.3%** | 12.2% | 97.8% | 21.7% |
+| Max | **80.0%** | 11.8% | 97.2% | 21.0% |  
 
 **Key Findings**:
-- TOTO successfully learned transferable patterns from observability data to industrial control systems
-- High AUROC demonstrates zero-shot transfer capability
+- TOTO's multivariate timeseries represenations learned from its diverse training data are succesfully utilised in anomaly detection in a real-world water treatment dataset.
+- High AUROC demonstrates zero-shot transfer capability.
 - Low F1 due to distribution shift between calibration and evaluation sets (threshold too low)
-- **Conclusion**: Threshold-setting failure, not ranking failure
+- **Conclusion**: Threshold-setting failure, not a ranking failure.
 
 ### SMD: Fundamental Ranking Failure
 
-| Aggregation | AUROC | Precision | Recall | F1 | Interpretation |
-|-------------|-------|-----------|--------|----|----|
-| Mean | **53.0%** | 1.7% | 6.1% | 2.7% | ✗ Random performance |
-| Max | **50.1%** | 9.6% | 5.1% | 6.6% | ✗ Literally a coin flip |
+| Aggregation | AUROC | Precision | Recall | F1 |
+|-------------|-------|-----------|--------|----|
+| Mean | **53.0%** | 1.7% | 6.1% | 2.7% |
+| Max | **50.1%** | 9.6% | 5.1% | 6.6% |
 
 **Key Findings**:
 - AUROC ≈ 0.5 indicates model cannot distinguish anomalies from normal data
 - Root cause: **Inverted separation**—anomalies are MORE predictable than normal operations
 - Server anomalies (crashes, saturation) manifest as simple patterns (flatlines, zeros)
 - Normal operations exhibit complex, multi-modal behavior
-- **Conclusion**: Core assumption "anomalous = unpredictable" does not hold for SMD
+- **Conclusion**: Core assumption "anomalous = unpredictable" does not hold for SMD.
 
-For more information about our experimentation please read blogpost_anomaly_detection.md
+More details on experimentation procedure and results can be found in blogpost_anomaly_detection.md
+
 ---
 
 ## Design Choices & Trade-offs
@@ -286,3 +287,20 @@ For more information about our experimentation please read blogpost_anomaly_dete
 - Mean + k*std: Statistical outlier detection
 - Median Absolute Deviation (MAD): Robust to outliers
 - Adaptive online thresholds: Update threshold as distribution shifts (future work)
+
+### Future work
+-Expand dataset selection other benchmark candidates are (SMAP,WADI,MSL,HAI) 
+-Try different error scoring metrics (MAE/MSE). Currently, Negative Log Likelihood is used.
+-Error diagnosis for SMD, Do anomalous datapoints score lower forecastin error than non-anomalous datapoints? Why can explain this behaviour?
+-Finetuning TOTO to further improve performance. Potentially, SOTA anomaly detection performance can be achieved on benchmark dataset by fine-tuning TOTO on domain relevant data.
+
+Feel free to open an issue or email me at andreas@bacd.nl for suggestions and improvements.
+
+## Acknowledgments
+
+This project extends and builds upon the Toto repository (https://github.com/DataDog/toto), developed by the Datadog AI Research team. Core components, including model architecture and inference utilities, are adapted from their Apache-2.0 licensed implementation.
+
+- Original repository: https://github.com/DataDog/toto [attached_file:1]
+- Associated paper: "This Time is Different: An Observability Perspective on Time Series Foundation Models" (arXiv:2505.14766) [attached_file:1]
+- License: Apache-2.0 (see [LICENSE](LICENSE) file) [attached_file:1]
+
