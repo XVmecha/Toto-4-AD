@@ -58,8 +58,8 @@ detector = AnomalyDetector(
     threshold_percentile=95.0,
 )
 
-# Fit on normal training data (no anomalies)
-detector.fit(train_series, stride=32)  # train_series: (batch, variates, timesteps)
+# Calibrate the detection threshold on normal, anomaly-free data (TOTO is not trained here)
+detector.fit(calibration_series, stride=32)  # calibration_series: (batch, variates, timesteps), no anomalies
 print(f"Threshold: {detector.threshold:.4f}")
 
 # Detect anomalies in test data
@@ -80,12 +80,14 @@ is_anomaly, scores = detector.detect(
 
 We evaluate on two benchmark multivariate time series anomaly detection datasets:
 
+> **Terminology note**: This is a *zero-shot* setup — TOTO is never trained or fine-tuned on these datasets. The files named `*_train.pt` / `*_test.pt` are **not** a supervised train/test split. The "train" file is an **anomaly-free calibration set** used only to set the detection threshold; the "test" file is the **anomaly-containing evaluation set**. The labels below ("Calibration set" / "Evaluation set") refer to these dataset partitions, not to any model training.
+
 ### 1. SWaT (Secure Water Treatment)
 
 **Domain**: Industrial control systems
 **Sensors**: 51 variates (flow rates, tank levels, valve states)
-**Training**: 7 days normal operation (496,800 timesteps)
-**Test**: 4 days with 36 cyber-physical attacks (449,919 timesteps, ~12% anomalous)
+**Calibration set (normal)**: 7 days normal operation (496,800 timesteps)
+**Evaluation set (with anomalies)**: 4 days with 36 cyber-physical attacks (449,919 timesteps, ~12% anomalous)
 **Anomalies**: Manipulated sensor readings, unauthorized valve controls
 
 **Preprocess SWaT:**
@@ -109,8 +111,8 @@ python preprocess_swat.py \
 **Domain**: Server monitoring
 **Sensors**: 38 variates per machine (CPU, memory, disk I/O, network)
 **Machines**: 28 independent servers
-**Training**: ~23,687 timesteps per machine (all normal)
-**Test**: ~23,687 timesteps per machine (~4.3% anomalous)
+**Calibration set (normal)**: ~23,687 timesteps per machine (all normal)
+**Evaluation set (with anomalies)**: ~23,687 timesteps per machine (~4.3% anomalous)
 **Anomalies**: Hardware failures, configuration errors, resource exhaustion
 
 **Preprocess SMD:**
