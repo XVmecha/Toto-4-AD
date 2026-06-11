@@ -22,6 +22,9 @@ We transform TOTO's probabilistic forecasts into anomaly scores through three ke
 
 **Key Advantage**: This is a true zero-shot approach—we never use anomaly data during threshold calibration, enabling detection of novel anomaly types.
 
+For the full story, read the project blog post: [Toto for Anomaly Detection](https://github.com/XVmecha/Toto-4-AD/blob/main/blogpost_anomaly_detection.md).
+
+
 ### Taking a quick look
 The anomaly detection code can be found in toto/anomaly_detection.
 
