@@ -148,9 +148,9 @@ This threshold failure reveals a fundamental tension in zero-shot anomaly detect
 
 Our analysis identifies three implementation decisions that profoundly impact performance:
 
-**1. Error Metric Selection**: While we used Negative Log-Likelihood to leverage TOTO's probabilistic outputs, preliminary analysis reveals **MAE achieves superior separation** (2.40x anomaly-to-normal ratio) compared to NLL (1.56x) and MSE (1.69x) on SWaT. This suggests simpler point-based metrics may be more robust to distribution shift than probabilistic scoring, challenging the assumption that probabilistic models necessarily require probabilistic evaluation metrics.
+**1.Error scoring**: While we used Negative Log-Likelihood to leverage TOTO's probabilistic outputs, preliminary analysis reveals **MAE achieves superior separation** (2.40x anomaly-to-normal ratio) compared to NLL (1.56x) and MSE (1.69x) on SWaT. This suggests simpler point-based metrics may be more robust to distribution shift than probabilistic scoring, challenging the assumption that probabilistic models necessarily require probabilistic evaluation metrics.
 
-**2. Aggregation Strategy**: Our comparison of mean versus max aggregation reveals their differential sensitivities: mean aggregation preserves score scale and suits system-wide anomalies, while max aggregation amplifies localized sensor failures but increases noise sensitivity. The choice fundamentally shapes threshold dynamics and detection characteristics.
+**2.Error aggregation**: Our comparison of mean versus max aggregation reveals their differential sensitivities: mean aggregation preserves score scale and suits system-wide anomalies, while max aggregation amplifies localized sensor failures but increases noise sensitivity. The choice fundamentally shapes threshold dynamics and detection characteristics.
 
 **3. Normalization Robustness**: Post-hoc analysis of preprocessing pipelines reveals z-score normalization's fragility under distribution shift. When sensor operational ranges differ between calibration and evaluation periods—or when dormant sensors activate—division by calibration statistics can produce extreme outliers that overwhelm detection systems. This normalization brittleness compounds threshold selection challenges.
 
