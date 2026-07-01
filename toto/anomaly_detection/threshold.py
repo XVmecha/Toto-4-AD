@@ -40,7 +40,7 @@ class ThresholdEstimator:
 
     def __init__(
         self,
-        method: Literal['percentile', 'mean_std', 'mad'] = 'percentile',
+        method: Literal["percentile", "mean_std", "mad"] = "percentile",
         percentile: float = 95.0,
         n_std: float = 3.0,
     ):
@@ -76,11 +76,11 @@ class ThresholdEstimator:
         scores_flat = scores.flatten()
 
         # Compute threshold based on method
-        if self.method == 'percentile':
+        if self.method == "percentile":
             threshold = self._percentile_threshold(scores_flat)
-        elif self.method == 'mean_std':
+        elif self.method == "mean_std":
             threshold = self._mean_std_threshold(scores_flat)
-        elif self.method == 'mad':
+        elif self.method == "mad":
             threshold = self._mad_threshold(scores_flat)
         else:
             raise ValueError(f"Unknown threshold method: {self.method}")
@@ -108,6 +108,7 @@ class ThresholdEstimator:
         if not self._fitted:
             raise RuntimeError("Threshold has not been fitted. Call fit() first.")
 
+        assert self.threshold_ is not None
         return scores > self.threshold_
 
     def fit_predict(self, train_scores: Tensor, test_scores: Tensor) -> Tensor:
@@ -172,4 +173,5 @@ class ThresholdEstimator:
         """Get the fitted threshold value."""
         if not self._fitted:
             raise RuntimeError("Threshold has not been fitted. Call fit() first.")
+        assert self.threshold_ is not None
         return self.threshold_

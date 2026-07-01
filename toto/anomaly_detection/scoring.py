@@ -13,7 +13,7 @@ The scores can then be aggregated into a scalar anomaly score using various
 aggregation functions (see detector.py).
 """
 
-from typing import Optional
+from typing import Any, Optional
 
 import torch
 from torch import Tensor
@@ -82,18 +82,17 @@ class NLLScorer:
 
         # Validate input shapes
         batch_size, num_variates, seq_len = inputs.series.shape
-        assert seq_len >= self.context_length, \
-            f"Input sequence length {seq_len} < context_length {self.context_length}"
+        assert seq_len >= self.context_length, f"Input sequence length {seq_len} < context_length {self.context_length}"
         assert targets.shape[0] == batch_size, "Batch size mismatch"
         assert targets.shape[1] == num_variates, "Number of variates mismatch"
 
         # Truncate inputs to context_length if longer
         if seq_len > self.context_length:
             inputs = MaskedTimeseries(
-                series=inputs.series[:, :, -self.context_length:],
-                padding_mask=inputs.padding_mask[:, :, -self.context_length:],
-                id_mask=inputs.id_mask[:, :, -self.context_length:],
-                timestamp_seconds=inputs.timestamp_seconds[:, :, -self.context_length:],
+                series=inputs.series[:, :, -self.context_length :],
+                padding_mask=inputs.padding_mask[:, :, -self.context_length :],
+                id_mask=inputs.id_mask[:, :, -self.context_length :],
+                timestamp_seconds=inputs.timestamp_seconds[:, :, -self.context_length :],
                 time_interval_seconds=inputs.time_interval_seconds,
             )
 
@@ -119,11 +118,13 @@ class NLLScorer:
         # We need to extract the marginal distribution for just one timestep
         # and evaluate log_prob for that single timestep
 
-        # For MixtureSameFamily, we need to manually extract the components at the target position
-        distr = output.distribution
+        # For MixtureSameFamily, we need to manually extract the components at the target position.
+        # Typed as Any: the concrete distribution (mixture vs affine-transformed) and its parameter
+        # attributes are resolved at runtime and not visible to the static type of `.distribution`.
+        distr: Any = output.distribution
 
         # Check if it's a MixtureSameFamily
-        if hasattr(distr, 'component_distribution'):
+        if hasattr(distr, "component_distribution"):
             # MixtureSameFamily case
             # Extract the time dimension
             total_timesteps = distr.component_distribution.df.shape[2]  # (B, V, T, K)
@@ -138,6 +139,7 @@ class NLLScorer:
 
             # Create marginal distributions for target position
             from gluonts.torch.distributions.studentT import StudentT
+
             component_t = StudentT(df_t, loc_t, scale_t)
             mixture_t = torch.distributions.Categorical(probs=probs_t)
             distr_t = torch.distributions.MixtureSameFamily(mixture_t, component_t)
@@ -156,11 +158,14 @@ class NLLScorer:
             loc_base_t = distr.base_dist.loc[:, :, target_position]
             scale_base_t = distr.base_dist.scale[:, :, target_position]
             loc_affine_t = distr.loc[:, :, target_position] if distr.loc.shape[-1] > 1 else distr.loc.squeeze(-1)
-            scale_affine_t = distr.scale[:, :, target_position] if distr.scale.shape[-1] > 1 else distr.scale.squeeze(-1)
+            scale_affine_t = (
+                distr.scale[:, :, target_position] if distr.scale.shape[-1] > 1 else distr.scale.squeeze(-1)
+            )
 
             # Create marginal distribution
             base_dist_t = torch.distributions.StudentT(df_t, loc_base_t, scale_base_t, validate_args=False)
             from gluonts.torch.distributions import AffineTransformed
+
             distr_t = AffineTransformed(base_dist_t, loc=loc_affine_t, scale=scale_affine_t)
 
             # Evaluate log probability
@@ -180,6 +185,7 @@ class NLLScorer:
         timestamp_seconds: Optional[Tensor] = None,
         time_interval_seconds: Optional[Tensor] = None,
         stride: int = 1,
+        progress_every: int = 0,
     ) -> Tensor:
         """
         Compute NLL scores for a full time series in a streaming manner.
@@ -208,8 +214,9 @@ class NLLScorer:
         batch_size, num_variates, seq_len = series.shape
 
         # Validate we have enough data
-        assert seq_len > self.context_length, \
-            f"Sequence length {seq_len} must be > context_length {self.context_length}"
+        assert (
+            seq_len > self.context_length
+        ), f"Sequence length {seq_len} must be > context_length {self.context_length}"
 
         # Create default masks if not provided
         if padding_mask is None:
@@ -237,6 +244,8 @@ class NLLScorer:
 
         # Slide window across time series
         for i in range(num_outputs):
+            if progress_every and i % progress_every == 0:
+                print(f"    window {i}/{num_outputs}", flush=True)
             t = self.context_length + i * stride
 
             # Extract context window
