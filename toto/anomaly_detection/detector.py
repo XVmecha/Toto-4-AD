@@ -17,7 +17,7 @@ The detector workflow:
    - Compare to threshold
 """
 
-from typing import Dict, Literal, Optional
+from typing import Dict, Literal, Optional, Tuple, Union
 
 import torch
 from torch import Tensor
@@ -69,8 +69,8 @@ class AnomalyDetector:
         self,
         model: TotoBackbone,
         context_length: int = 512,
-        aggregation: Literal['l2', 'mean', 'max', 'sum', 'topk', 'weighted'] = 'l2',
-        threshold_method: Literal['percentile', 'mean_std', 'mad'] = 'percentile',
+        aggregation: Literal["l2", "mean", "max", "sum", "topk", "weighted"] = "l2",
+        threshold_method: Literal["percentile", "mean_std", "mad"] = "percentile",
         threshold_percentile: float = 95.0,
         topk: int = 3,
         weights: Optional[Tensor] = None,
@@ -155,7 +155,7 @@ class AnomalyDetector:
         time_interval_seconds: Optional[Tensor] = None,
         stride: int = 1,
         return_scores: bool = False,
-    ) -> Tensor:
+    ) -> Union[Tensor, Tuple[Tensor, Tensor]]:
         """
         Detect anomalies in test time series.
 
@@ -244,25 +244,25 @@ class AnomalyDetector:
             aggregated: Scalar scores (B, T_out)
         """
         # Aggregate over V dimension
-        if self.aggregation == 'l2':
+        if self.aggregation == "l2":
             # L2-norm (Euclidean distance) - RECOMMENDED DEFAULT
             # sqrt(sum of squares) - balanced between robust and sensitive
             aggregated = nll.norm(p=2, dim=1)  # (B, T_out)
 
-        elif self.aggregation == 'mean':
+        elif self.aggregation == "mean":
             # Mean - scale-invariant, robust but may dilute signal
             aggregated = nll.mean(dim=1)
 
-        elif self.aggregation == 'max':
+        elif self.aggregation == "max":
             # Max - most sensitive, detects any single anomalous variate
             aggregated = nll.max(dim=1)[0]
 
-        elif self.aggregation == 'sum':
+        elif self.aggregation == "sum":
             # Sum - theoretically principled if variates are independent
             # but sensitive to number of variates
             aggregated = nll.sum(dim=1)
 
-        elif self.aggregation == 'topk':
+        elif self.aggregation == "topk":
             # Top-K mean - average of K most anomalous variates
             # Robust to noise in majority of variates
             if self.topk > nll.shape[1]:
@@ -272,15 +272,12 @@ class AnomalyDetector:
                 topk_values = nll.topk(k=self.topk, dim=1)[0]  # (B, K, T_out)
                 aggregated = topk_values.mean(dim=1)  # (B, T_out)
 
-        elif self.aggregation == 'weighted':
+        elif self.aggregation == "weighted":
             # Weighted sum - requires domain knowledge to set weights
             if self.weights is None:
                 raise ValueError("Weights must be provided for 'weighted' aggregation")
             if self.weights.shape[0] != nll.shape[1]:
-                raise ValueError(
-                    f"Weights dimension {self.weights.shape[0]} != "
-                    f"number of variates {nll.shape[1]}"
-                )
+                raise ValueError(f"Weights dimension {self.weights.shape[0]} != " f"number of variates {nll.shape[1]}")
             # weights shape: (V,), nll shape: (B, V, T_out)
             weights_expanded = self.weights.unsqueeze(0).unsqueeze(-1)  # (1, V, 1)
             aggregated = (nll * weights_expanded).sum(dim=1)  # (B, T_out)
@@ -289,8 +286,9 @@ class AnomalyDetector:
             raise ValueError(f"Unknown aggregation method: {self.aggregation}")
 
         return aggregated
-    
-        #redundant remove
+
+        # redundant remove
+
     # def fit_detect(
     #     self,
     #     train_series: Tensor,

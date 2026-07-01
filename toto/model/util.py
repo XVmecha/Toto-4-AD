@@ -31,15 +31,16 @@ def get_device() -> torch.device:
     elif torch.backends.mps.is_available():
         # Enable CPU fallback for unsupported MPS operations (e.g., gamma sampling)
         # This is needed for Student-T distribution sampling
-        os.environ['PYTORCH_ENABLE_MPS_FALLBACK'] = '1'
+        os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"
         warnings.warn(
             "MPS device detected. Enabling CPU fallback for unsupported operations "
             "(e.g., Student-T distribution sampling). Some operations may be slower.",
-            UserWarning
+            UserWarning,
         )
         return torch.device("mps")
     else:
         return torch.device("cpu")
+
 
 if TYPE_CHECKING:
     from ..model.transformer import TransformerLayer  # Import only for type checking
