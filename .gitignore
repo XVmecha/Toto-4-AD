@@ -58,3 +58,8 @@ env/
 # Cache
 **/.mypy_cache
 **/.pytest_cache
+
+# Datasets and regenerable caches (not for version control)
+toto/data/
+toto/results/scores/
+scratch_*.py
