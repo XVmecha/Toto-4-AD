@@ -1,0 +1,16 @@
+{
+  "dataset": "swat",
+  "context_length": 512,
+  "fit_stride": 32,
+  "detect_stride": 8,
+  "n_samples": 5559,
+  "n_anomaly": 669,
+  "auroc": {
+    "raw_mean": 0.8323258166967761,
+    "raw_max": 0.7938531092097902,
+    "zscore_meanstd_mean": 0.7786724990141866,
+    "zscore_meanstd_max": 0.7373725702372983,
+    "robust_median_iqr_mean": 0.7828709944641606,
+    "robust_median_iqr_max": 0.7373725702372983
+  }
+}

@@ -1,0 +1,236 @@
+{
+  "dataset": "smd",
+  "detect_stride": 8,
+  "standardization_baseline": "test_period_normal_per_variate",
+  "alignment_iou": 0.9877566461464388,
+  "events_used": 250,
+  "events_skipped_no_scored_point": 77,
+  "anomaly_sparsity_frac_variates_affected": {
+    "mean": 0.2953197943121907,
+    "median": 0.24379364723633518
+  },
+  "standardized_error_sigma": {
+    "affected": {
+      "mean": 0.6231139302253723,
+      "median": -0.01682618446648121,
+      "frac_gt1": 0.20329387545033453,
+      "frac_gt2": 0.11116829644879053,
+      "n": 1943
+    },
+    "unaffected": {
+      "mean": 0.12818346917629242,
+      "median": -0.006584277842193842,
+      "frac_gt1": 0.14476644170967315,
+      "frac_gt2": 0.05226941908164615,
+      "n": 7557
+    }
+  },
+  "paired_per_event": {
+    "frac_events_affected_gt_unaffected": 0.624,
+    "mean_gap_sigma": 1.5548585977861658,
+    "n_events": 250
+  },
+  "tail_concentration": {
+    "total_affected_cells_z_gt2": 216,
+    "top3_machines_share": 0.3611111111111111,
+    "top6_machines_share": 0.5555555555555556,
+    "per_machine": [
+      {
+        "machine_id": 11,
+        "machine_name": "machine-2-4",
+        "n_affected_cells": 83,
+        "n_tail_z_gt2": 36,
+        "mean_affected_z": 9.44217771148107
+      },
+      {
+        "machine_id": 12,
+        "machine_name": "machine-2-5",
+        "n_affected_cells": 85,
+        "n_tail_z_gt2": 23,
+        "mean_affected_z": 1.8948245571597535
+      },
+      {
+        "machine_id": 14,
+        "machine_name": "machine-2-7",
+        "n_affected_cells": 80,
+        "n_tail_z_gt2": 19,
+        "mean_affected_z": 1.1765526890289038
+      },
+      {
+        "machine_id": 5,
+        "machine_name": "machine-1-6",
+        "n_affected_cells": 246,
+        "n_tail_z_gt2": 15,
+        "mean_affected_z": 0.1845844571182421
+      },
+      {
+        "machine_id": 10,
+        "machine_name": "machine-2-3",
+        "n_affected_cells": 75,
+        "n_tail_z_gt2": 15,
+        "mean_affected_z": 0.7477392260109385
+      },
+      {
+        "machine_id": 8,
+        "machine_name": "machine-2-1",
+        "n_affected_cells": 88,
+        "n_tail_z_gt2": 12,
+        "mean_affected_z": 0.3294166310436346
+      },
+      {
+        "machine_id": 15,
+        "machine_name": "machine-2-8",
+        "n_affected_cells": 34,
+        "n_tail_z_gt2": 10,
+        "mean_affected_z": 0.13880176995606983
+      },
+      {
+        "machine_id": 3,
+        "machine_name": "machine-1-4",
+        "n_affected_cells": 93,
+        "n_tail_z_gt2": 8,
+        "mean_affected_z": 0.28147289901971817
+      },
+      {
+        "machine_id": 25,
+        "machine_name": "machine-3-7",
+        "n_affected_cells": 65,
+        "n_tail_z_gt2": 8,
+        "mean_affected_z": 0.32924456549808384
+      },
+      {
+        "machine_id": 1,
+        "machine_name": "machine-1-2",
+        "n_affected_cells": 66,
+        "n_tail_z_gt2": 7,
+        "mean_affected_z": 0.696692222785769
+      },
+      {
+        "machine_id": 9,
+        "machine_name": "machine-2-2",
+        "n_affected_cells": 58,
+        "n_tail_z_gt2": 7,
+        "mean_affected_z": 0.12981795095678034
+      },
+      {
+        "machine_id": 2,
+        "machine_name": "machine-1-3",
+        "n_affected_cells": 78,
+        "n_tail_z_gt2": 6,
+        "mean_affected_z": -0.1363925612412202
+      },
+      {
+        "machine_id": 6,
+        "machine_name": "machine-1-7",
+        "n_affected_cells": 128,
+        "n_tail_z_gt2": 6,
+        "mean_affected_z": 0.13059482573498826
+      },
+      {
+        "machine_id": 23,
+        "machine_name": "machine-3-5",
+        "n_affected_cells": 40,
+        "n_tail_z_gt2": 6,
+        "mean_affected_z": 0.5614796607289463
+      },
+      {
+        "machine_id": 7,
+        "machine_name": "machine-1-8",
+        "n_affected_cells": 64,
+        "n_tail_z_gt2": 5,
+        "mean_affected_z": -0.03979855010402389
+      },
+      {
+        "machine_id": 22,
+        "machine_name": "machine-3-4",
+        "n_affected_cells": 30,
+        "n_tail_z_gt2": 5,
+        "mean_affected_z": 0.7286689562102159
+      },
+      {
+        "machine_id": 0,
+        "machine_name": "machine-1-1",
+        "n_affected_cells": 67,
+        "n_tail_z_gt2": 4,
+        "mean_affected_z": -0.02039124555329778
+      },
+      {
+        "machine_id": 4,
+        "machine_name": "machine-1-5",
+        "n_affected_cells": 72,
+        "n_tail_z_gt2": 4,
+        "mean_affected_z": -0.14081500937593067
+      },
+      {
+        "machine_id": 20,
+        "machine_name": "machine-3-2",
+        "n_affected_cells": 20,
+        "n_tail_z_gt2": 4,
+        "mean_affected_z": 1.0523302141577004
+      },
+      {
+        "machine_id": 24,
+        "machine_name": "machine-3-6",
+        "n_affected_cells": 60,
+        "n_tail_z_gt2": 4,
+        "mean_affected_z": 0.14546089805662632
+      },
+      {
+        "machine_id": 17,
+        "machine_name": "machine-3-1",
+        "n_affected_cells": 23,
+        "n_tail_z_gt2": 2,
+        "mean_affected_z": -0.7700198010905929
+      },
+      {
+        "machine_id": 18,
+        "machine_name": "machine-3-10",
+        "n_affected_cells": 92,
+        "n_tail_z_gt2": 2,
+        "mean_affected_z": -0.16272381073592798
+      },
+      {
+        "machine_id": 19,
+        "machine_name": "machine-3-11",
+        "n_affected_cells": 23,
+        "n_tail_z_gt2": 2,
+        "mean_affected_z": -1.143059785032402
+      },
+      {
+        "machine_id": 26,
+        "machine_name": "machine-3-8",
+        "n_affected_cells": 53,
+        "n_tail_z_gt2": 2,
+        "mean_affected_z": 0.2307186196646038
+      },
+      {
+        "machine_id": 27,
+        "machine_name": "machine-3-9",
+        "n_affected_cells": 28,
+        "n_tail_z_gt2": 2,
+        "mean_affected_z": -0.674131123382332
+      },
+      {
+        "machine_id": 16,
+        "machine_name": "machine-2-9",
+        "n_affected_cells": 80,
+        "n_tail_z_gt2": 1,
+        "mean_affected_z": 0.25016127054113896
+      },
+      {
+        "machine_id": 21,
+        "machine_name": "machine-3-3",
+        "n_affected_cells": 52,
+        "n_tail_z_gt2": 1,
+        "mean_affected_z": -0.512144412415532
+      },
+      {
+        "machine_id": 13,
+        "machine_name": "machine-2-6",
+        "n_affected_cells": 60,
+        "n_tail_z_gt2": 0,
+        "mean_affected_z": -0.9723520437876384
+      }
+    ]
+  }
+}
