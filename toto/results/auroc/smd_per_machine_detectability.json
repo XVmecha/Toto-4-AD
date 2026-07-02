@@ -1,0 +1,304 @@
+{
+  "dataset": "smd",
+  "context_length": 512,
+  "fit_stride": 32,
+  "detect_stride": 8,
+  "normalization": "robust per-variate (median/IQR) on calibration-normal data, GDN-style",
+  "label_alignment": "target timestep = context_length + i*detect_stride",
+  "macro": {
+    "auroc_raw_mean": 0.48289393460298313,
+    "auroc_raw_max": 0.3032987246513092,
+    "auroc_robust_mean": 0.6913166108479799,
+    "auroc_robust_max": 0.7292076921607956,
+    "auroc_best_variate_oracle": 0.9338050959939822
+  },
+  "robust_max_machine_counts": {
+    "gt_0.7": 16,
+    "gt_0.6": 24,
+    "chance_0.45_0.55": 2,
+    "lt_0.45": 2,
+    "n_machines": 28
+  },
+  "per_machine": [
+    {
+      "machine_id": 15,
+      "machine_name": "machine-2-8",
+      "n_anomaly": 20,
+      "auroc_raw_mean": 0.4757823365785814,
+      "auroc_raw_max": 0.04012517385257302,
+      "auroc_robust_mean": 0.964481919332406,
+      "auroc_robust_max": 0.9734527121001391,
+      "auroc_best_variate_oracle": 0.9788769123783032
+    },
+    {
+      "machine_id": 17,
+      "machine_name": "machine-3-1",
+      "n_anomaly": 23,
+      "auroc_raw_mean": 0.32523191936923984,
+      "auroc_raw_max": 0.27471662706760086,
+      "auroc_robust_mean": 0.8722286959548419,
+      "auroc_robust_max": 0.9230466562750645,
+      "auroc_best_variate_oracle": 0.9562552356823244
+    },
+    {
+      "machine_id": 0,
+      "machine_name": "machine-1-1",
+      "n_anomaly": 335,
+      "auroc_raw_mean": 0.48287107997692136,
+      "auroc_raw_max": 0.25321498714937607,
+      "auroc_robust_mean": 0.888932145209136,
+      "auroc_robust_max": 0.9101866691532576,
+      "auroc_best_variate_oracle": 0.9389114043575613
+    },
+    {
+      "machine_id": 25,
+      "machine_name": "machine-3-7",
+      "n_anomaly": 53,
+      "auroc_raw_mean": 0.3572096974362718,
+      "auroc_raw_max": 0.16034085705373674,
+      "auroc_robust_mean": 0.8463223143238274,
+      "auroc_robust_max": 0.9065828682165398,
+      "auroc_best_variate_oracle": 0.9847697513080782
+    },
+    {
+      "machine_id": 12,
+      "machine_name": "machine-2-5",
+      "n_anomaly": 123,
+      "auroc_raw_mean": 0.46363452455296283,
+      "auroc_raw_max": 0.37096391158646536,
+      "auroc_robust_mean": 0.8777350701743586,
+      "auroc_robust_max": 0.8971411315267137,
+      "auroc_best_variate_oracle": 1.0
+    },
+    {
+      "machine_id": 16,
+      "machine_name": "machine-2-9",
+      "n_anomaly": 217,
+      "auroc_raw_mean": 0.5878629311783233,
+      "auroc_raw_max": 0.49208470730704595,
+      "auroc_robust_mean": 0.8614329234204248,
+      "auroc_robust_max": 0.8824136525252734,
+      "auroc_best_variate_oracle": 0.9060479457697332
+    },
+    {
+      "machine_id": 20,
+      "machine_name": "machine-3-2",
+      "n_anomaly": 134,
+      "auroc_raw_mean": 0.4366563273422893,
+      "auroc_raw_max": 0.3847282414862689,
+      "auroc_robust_mean": 0.6009164892409783,
+      "auroc_robust_max": 0.8676737600916489,
+      "auroc_best_variate_oracle": 0.996545768566494
+    },
+    {
+      "machine_id": 19,
+      "machine_name": "machine-3-11",
+      "n_anomaly": 8,
+      "auroc_raw_mean": 0.21636945983379502,
+      "auroc_raw_max": 0.002856648199445991,
+      "auroc_robust_mean": 0.8575571329639889,
+      "auroc_robust_max": 0.8630107340720222,
+      "auroc_best_variate_oracle": 0.9571258130315976
+    },
+    {
+      "machine_id": 24,
+      "machine_name": "machine-3-6",
+      "n_anomaly": 136,
+      "auroc_raw_mean": 0.5765958013640238,
+      "auroc_raw_max": 0.2633045609548167,
+      "auroc_robust_mean": 0.8048326939471441,
+      "auroc_robust_max": 0.8197969948849104,
+      "auroc_best_variate_oracle": 0.9783886583679114
+    },
+    {
+      "machine_id": 27,
+      "machine_name": "machine-3-9",
+      "n_anomaly": 25,
+      "auroc_raw_mean": 0.3036990595611285,
+      "auroc_raw_max": 0.310609543712992,
+      "auroc_robust_mean": 0.6220271682340648,
+      "auroc_robust_max": 0.7980633925461511,
+      "auroc_best_variate_oracle": 0.8678699525627676
+    },
+    {
+      "machine_id": 26,
+      "machine_name": "machine-3-8",
+      "n_anomaly": 158,
+      "auroc_raw_mean": 0.4602962524618358,
+      "auroc_raw_max": 0.35673271629481,
+      "auroc_robust_mean": 0.7040179933611339,
+      "auroc_robust_max": 0.7865391905761389,
+      "auroc_best_variate_oracle": 0.96229183478835
+    },
+    {
+      "machine_id": 6,
+      "machine_name": "machine-1-7",
+      "n_anomaly": 301,
+      "auroc_raw_mean": 0.5434767857943017,
+      "auroc_raw_max": 0.5026763709920048,
+      "auroc_robust_mean": 0.6544415211978056,
+      "auroc_robust_max": 0.7851426523022169,
+      "auroc_best_variate_oracle": 0.9649994400482275
+    },
+    {
+      "machine_id": 9,
+      "machine_name": "machine-2-2",
+      "n_anomaly": 355,
+      "auroc_raw_mean": 0.6028734389809934,
+      "auroc_raw_max": 0.6668107820476579,
+      "auroc_robust_mean": 0.7512734811070279,
+      "auroc_robust_max": 0.7647416177505807,
+      "auroc_best_variate_oracle": 0.9063324922360249
+    },
+    {
+      "machine_id": 8,
+      "machine_name": "machine-2-1",
+      "n_anomaly": 145,
+      "auroc_raw_mean": 0.6003008310457639,
+      "auroc_raw_max": 0.41787939181990247,
+      "auroc_robust_mean": 0.8231339074192459,
+      "auroc_robust_max": 0.7617869364118377,
+      "auroc_best_variate_oracle": 0.8725604225187267
+    },
+    {
+      "machine_id": 13,
+      "machine_name": "machine-2-6",
+      "n_anomaly": 40,
+      "auroc_raw_mean": 0.5731967787114846,
+      "auroc_raw_max": 0.3118172268907563,
+      "auroc_robust_mean": 0.695141806722689,
+      "auroc_robust_max": 0.748686974789916,
+      "auroc_best_variate_oracle": 0.8758771578750767
+    },
+    {
+      "machine_id": 14,
+      "machine_name": "machine-2-7",
+      "n_anomaly": 57,
+      "auroc_raw_mean": 0.576976078802148,
+      "auroc_raw_max": 0.2580473727467665,
+      "auroc_robust_mean": 0.6667964380835851,
+      "auroc_robust_max": 0.7076620752303442,
+      "auroc_best_variate_oracle": 0.7892181399539493
+    },
+    {
+      "machine_id": 3,
+      "machine_name": "machine-1-4",
+      "n_anomaly": 84,
+      "auroc_raw_mean": 0.3541666666666667,
+      "auroc_raw_max": 0.09071242294926506,
+      "auroc_robust_mean": 0.5706157285104654,
+      "auroc_robust_max": 0.6881985368827473,
+      "auroc_best_variate_oracle": 0.9824682814302191
+    },
+    {
+      "machine_id": 1,
+      "machine_name": "machine-1-2",
+      "n_anomaly": 68,
+      "auroc_raw_mean": 0.4742907063815625,
+      "auroc_raw_max": 0.4115203011897829,
+      "auroc_robust_mean": 0.6372462351277144,
+      "auroc_robust_max": 0.6879056077876695,
+      "auroc_best_variate_oracle": 0.9683991683991684
+    },
+    {
+      "machine_id": 2,
+      "machine_name": "machine-1-3",
+      "n_anomaly": 101,
+      "auroc_raw_mean": 0.3490355833436653,
+      "auroc_raw_max": 0.18853327193184433,
+      "auroc_robust_mean": 0.6148001204413822,
+      "auroc_robust_max": 0.6855204661789971,
+      "auroc_best_variate_oracle": 0.7400653465780761
+    },
+    {
+      "machine_id": 11,
+      "machine_name": "machine-2-4",
+      "n_anomaly": 213,
+      "auroc_raw_mean": 0.6447865975827634,
+      "auroc_raw_max": 0.5246850715424364,
+      "auroc_robust_mean": 0.7005174293368611,
+      "auroc_robust_max": 0.6832657018018161,
+      "auroc_best_variate_oracle": 0.9582625182748538
+    },
+    {
+      "machine_id": 10,
+      "machine_name": "machine-2-3",
+      "n_anomaly": 35,
+      "auroc_raw_mean": 0.6482948020172767,
+      "auroc_raw_max": 0.09041793578668797,
+      "auroc_robust_mean": 0.7431966844759574,
+      "auroc_robust_max": 0.6595695810655615,
+      "auroc_best_variate_oracle": 0.9948168624740843
+    },
+    {
+      "machine_id": 18,
+      "machine_name": "machine-3-10",
+      "n_anomaly": 131,
+      "auroc_raw_mean": 0.3384481592424389,
+      "auroc_raw_max": 0.2975663625194981,
+      "auroc_robust_mean": 0.42952390155018433,
+      "auroc_robust_max": 0.642825393757851,
+      "auroc_best_variate_oracle": 0.9061947571916092
+    },
+    {
+      "machine_id": 22,
+      "machine_name": "machine-3-4",
+      "n_anomaly": 122,
+      "auroc_raw_mean": 0.693234602337868,
+      "auroc_raw_max": 0.3221689694706112,
+      "auroc_robust_mean": 0.5080903471343978,
+      "auroc_robust_max": 0.6342530759866205,
+      "auroc_best_variate_oracle": 0.9765112262521589
+    },
+    {
+      "machine_id": 4,
+      "machine_name": "machine-1-5",
+      "n_anomaly": 13,
+      "auroc_raw_mean": 0.2965927586114891,
+      "auroc_raw_max": 0.15165826196003093,
+      "auroc_robust_mean": 0.631100082712986,
+      "auroc_robust_max": 0.6139971717495131,
+      "auroc_best_variate_oracle": 0.9093814789219073
+    },
+    {
+      "machine_id": 7,
+      "machine_name": "machine-1-8",
+      "n_anomaly": 94,
+      "auroc_raw_mean": 0.5324881923246313,
+      "auroc_raw_max": 0.5317516363691588,
+      "auroc_robust_mean": 0.5879311130347624,
+      "auroc_robust_max": 0.5104446671830152,
+      "auroc_best_variate_oracle": 0.9253886010362694
+    },
+    {
+      "machine_id": 23,
+      "machine_name": "machine-3-5",
+      "n_anomaly": 52,
+      "auroc_raw_mean": 0.5426065671318837,
+      "auroc_raw_max": 0.3246375635616142,
+      "auroc_robust_mean": 0.6387806989072812,
+      "auroc_robust_max": 0.498005247214108,
+      "auroc_best_variate_oracle": 0.9403713998919002
+    },
+    {
+      "machine_id": 5,
+      "machine_name": "machine-1-6",
+      "n_anomaly": 462,
+      "auroc_raw_mean": 0.5821461474707161,
+      "auroc_raw_max": 0.2885750923959634,
+      "auroc_robust_mean": 0.4599033532887271,
+      "auroc_robust_max": 0.36523528512024817,
+      "auroc_best_variate_oracle": 0.9960645894190199
+    },
+    {
+      "machine_id": 21,
+      "machine_name": "machine-3-3",
+      "n_anomaly": 72,
+      "auroc_raw_mean": 0.48190608278249925,
+      "auroc_raw_max": 0.20322828139754484,
+      "auroc_robust_mean": 0.34388770853005973,
+      "auroc_robust_max": 0.35266662732137233,
+      "auroc_best_variate_oracle": 0.9125475285171103
+    }
+  ]
+}

@@ -98,17 +98,20 @@ def compute_auroc_for_dataset(dataset_name, aggregation='mean'):
     print(f"  Anomaly scores shape: {anomaly_scores_np.shape}")
     print(f"  Labels shape: {test_labels_np.shape}")
 
-    # Align labels with scores (same logic as detection scripts)
+    # Align labels with scores.
+    # Output index i corresponds to target timestep context_length + i*detect_stride
+    # (see NLLScorer.compute_nll_streaming). Indexing labels at raw positions
+    # 0..T_out (as before) decoupled each score from its true timestep.
+    n_out = anomaly_scores_np.shape[1]
+    positions = context_length + np.arange(n_out) * detect_stride
     if dataset_name == 'swat':
-        # SWaT: (1, timesteps) scores vs (1, timesteps) labels
-        # Already aligned after sliding window
-        scores_flat = anomaly_scores_np[0]  # (timesteps,)
-        labels_flat = test_labels_np[0, :len(scores_flat)]  # Truncate to match
+        # SWaT: single series (1, timesteps)
+        scores_flat = anomaly_scores_np[0]
+        labels_flat = test_labels_np[0, positions]
     else:
-        # SMD: (28, timesteps) scores vs (28, timesteps) labels
-        # Flatten across all machines
+        # SMD: (28, timesteps) - pooled across all machines
         scores_flat = anomaly_scores_np.flatten()
-        labels_flat = test_labels_np[:, :anomaly_scores_np.shape[1]].flatten()
+        labels_flat = test_labels_np[:, positions].flatten()
 
     # Ensure same length
     min_len = min(len(scores_flat), len(labels_flat))

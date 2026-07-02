@@ -1,0 +1,20 @@
+{
+  "dataset": "smd",
+  "detect_stride": 8,
+  "measure": "peak standardized error = max over affected variates AND in-window timesteps",
+  "standardization_baseline": "test_period_normal_per_variate",
+  "events_used": 250,
+  "events_skipped_no_scored_point": 77,
+  "frac_seen_at_threshold": {
+    "peak_gt_1": 0.788,
+    "peak_gt_2": 0.632,
+    "peak_gt_3": 0.488,
+    "peak_gt_5": 0.312
+  },
+  "frac_unnoticed_peak_lt_1": 0.212,
+  "peak_distribution": {
+    "median": 2.8580302000045776,
+    "pct75": 6.0552250146865845,
+    "pct90": 11.163341999053952
+  }
+}

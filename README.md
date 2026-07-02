@@ -1,26 +1,44 @@
 # TOTO Anomaly Detection
 
-**Zero-shot anomaly detection for multivariate time series using TOTO**
+This module extends TOTO (Time Series Optimized Transformer for Observability) from a forecasting foundation model into a **zero-shot anomaly detection system**. TOTO was pretrained on **one trillion observability data points** — infrastructure, application, and cloud metrics — learning rich representations of normal operational behavior. The core insight: if it can accurately predict normal behavior, then large prediction errors flag deviations from it — anomalies — letting us catch previously unseen ones **without task-specific training**.
 
 ---
 
-## Overview
+## From forecasting to anomaly detection
 
-This module extends TOTO (Time Series Optimized Transformer for Observability) from a forecasting foundation model into a **zero-shot anomaly detection system**. The core insight: if TOTO has learned to accurately predict normal system behavior, then large prediction errors signal deviations from normality—i.e., anomalies.
+TOTO is a **forecasting foundation model**: it predicts what every sensor should do next, and we never retrain it. We turn that forecasting skill into a zero-shot anomaly detector in three moves: **score the surprise, collapse it to one number per timestep, then draw the line using only normal data.**
 
-### The Premise
+### ① Error scoring
 
-TOTO was pretrained on **one trillion time series data points** from observability metrics (infrastructure monitoring, application performance, cloud services). Through this extensive training, TOTO learned rich representations of normal operational patterns. We leverage these learned patterns to detect previously unseen anomalies **without task-specific training**.
+![Step 1 — Error scoring](toto/anomaly_detection/figures/readme_step1_nll.png)
 
-### The Approach
+**Figure 1.** TOTO outputs a **mixture of Student-T distributions** (24 components) for each time-series variate at every step, conditioned on the recent history. A point forecast is simply the **mode**, the most-probable value, of that output distribution. For anomaly detection, though, we are not after the forecast: we want to judge how anomalous an *observed* value is. We score each actual observation by its negative log-likelihood under the predicted distribution, $e_t^{(j)} = -\log p\!\left(y_t^{(j)} \mid y_{<t}\right)$ — the per-variate **error score**. A high score means the observation had low probability (high surprise); a low score means it landed where TOTO expected it.
 
-We transform TOTO's probabilistic forecasts into anomaly scores through three key steps:
+### ② Error aggregation
 
-1. **Error Scoring**: Compute Negative Log-Likelihood (NLL) of observations under TOTO's predicted distributions
-2. **Error Aggregation**: Combine per-variate errors into scalar anomaly scores (Mean or Max)
-3. **Threshold Selection**: Establish decision boundaries using only normal data (95th percentile)
+![Step 2 — Error aggregation](toto/anomaly_detection/figures/readme_step2_aggregation.png)
 
-**Key Advantage**: This is a true zero-shot approach—we never use anomaly data during threshold calibration, enabling detection of novel anomaly types.
+**Figure 2.** Step 1 produces an **$N \times T$ matrix of error scores** $E = [\,e_t^{(j)}\,]$ — one entry per variate $j$ per timestep $t$. But anomaly detection is **per-timestep binary classification**: each timestep needs a single anomaly/normal label. Before we can threshold, we must therefore collapse each timestep's $N$ variate-errors into a single **anomaly score** $s_t$ — a step called **error aggregation**, an $\mathbb{R}^N \rightarrow \mathbb{R}$ compression that should preserve as much of the anomaly signal as possible. This is genuinely hard, because how an anomaly manifests is domain-dependent: a single rogue sensor calls for **max**, a system-wide shift for **mean**, with **L2** (the detector's default) in between. 
+
+### ③ Thresholding
+
+![Step 3 — Thresholding](toto/anomaly_detection/figures/readme_step3_threshold.png)
+
+**Figure 3.** With one anomaly score per timestep, detection reduces to a single comparison: flag any step whose score exceeds a threshold $\tau$, i.e. $a_t = \mathbb{1}[\,s_t > \tau\,]$. Because we want to catch **unseen** anomalies, we never model the anomalies themselves; we model normal operation and flag whatever deviates. That is what makes the method **zero-shot**: In this figure, $\tau$ is fit as the **95th percentile of calibration scores from normal data only**. Threshold choice has an outsized effect on measured performance, so benchmarks often sidestep it with **AUROC**, a threshold-free metric. However, any real deployment has to commit to a $\tau$.
+
+## What this codebase adds
+
+TOTO is as a *forecasting* model; this repository adds the thin layer that turns it into a **zero-shot multivariate anomaly detector** — no training, no labels. The `toto/anomaly_detection/` module implements the three steps above as a small, reusable API:
+
+- **`NLLScorer`** — per-variate negative-log-likelihood over a sliding context window (*error scoring*).
+- **`AnomalyDetector`** — `fit` / `detect` / `score` with pluggable aggregation (`l2`, `mean`, `max`, `sum`, `topk`) (*aggregation*).
+- **`ThresholdEstimator`** — thresholds from normal data only, with no anomalies seen (`percentile`, `mean_std`, `mad`) (*thresholding*).
+
+Around it sit reproducible **preprocessing** (SWaT, SMD), **detection**, and **AUROC** scripts, so the whole pipeline runs end-to-end on a benchmark with one command.
+
+**The experiment.** We ran a first zero-shot evaluation on two standard MVTS benchmarks — SWaT (industrial control) and SMD (server monitoring). The honest summary: forecasting-error detection transfers to both at the *scoring* stage — SWaT ranks anomalies at AUROC ≈ 0.86, and on SMD the per-variate error carries anomaly signal on every machine — but the failures live in the steps wrapped around the model. On SWaT the bottleneck is *thresholding* (a strong ranker crippled by distribution shift); on SMD it is *error aggregation* (a naive mean/max over 38 differently-scaled variates scores at chance, while a scale-aware aggregation recovers AUROC ≈ 0.73). The recurring lesson is that aggregation and thresholding, not the model, decide whether detection works. Full method, numbers, and analysis are in [the blogpost](results/TOTO-4-AD-BLOGPOST.md).
+
+**Try it on your data.** The detector is dataset-agnostic: hand it an anomaly-free calibration set and an evaluation set in `(batch, variates, timesteps)` form (see [Quick Start](#quick-start)) and it returns a per-timestep score and flag. I'd love to see TOTO-4-AD tested on *your* multivariate time-series anomaly detection datasets — if forecasting foundation models are going to generalize, that's how we find out.
 
 ---
 
@@ -38,41 +56,58 @@ cd Toto-4-AD
 pip install -e .
 ```
 
-### Basic Usage
+### Basic Usage — end to end
 
 ```python
 import torch
+from sklearn.metrics import roc_auc_score, f1_score
 from toto.model.toto import Toto
 from toto.anomaly_detection import AnomalyDetector
 
-# Load pretrained TOTO model
+device = "cuda" if torch.cuda.is_available() else "cpu"
+
+# 1. Load pretrained TOTO (no training / fine-tuning happens here)
 toto = Toto.from_pretrained('Datadog/Toto-Open-Base-1.0')
 toto.to(device)
 toto.eval()
 
-# Create anomaly detector
+# 2. Load preprocessed data (see "Datasets & Preprocessing").
+#    Each .pt holds 'series' (batch, variates, timesteps) and 'labels' (batch, timesteps).
+cal  = torch.load('toto/data/preprocessed_datasets/swat/swat_train.pt', weights_only=False)
+test = torch.load('toto/data/preprocessed_datasets/swat/swat_test.pt',  weights_only=False)
+
+# 3. Build the detector
 detector = AnomalyDetector(
     model=toto.model,
     context_length=512,
-    aggregation='mean',  # 'mean' or 'max'
+    aggregation='mean',          # 'mean' | 'max' | 'l2' | 'sum' | 'topk'
     threshold_percentile=95.0,
 )
 
-# Calibrate the detection threshold on normal, anomaly-free data (TOTO is not trained here)
-detector.fit(calibration_series, stride=32)  # calibration_series: (batch, variates, timesteps), no anomalies
-print(f"Threshold: {detector.threshold:.4f}")
+# 4. Fit tau on the anomaly-free calibration set
+detector.fit(cal['series'].to(device), stride=32)
+print(f"Threshold tau: {float(detector.threshold):.4f}")
 
-# Detect anomalies in test data
+# 5. Detect on the evaluation set -> per-timestep flags + scores, both (batch, T_out)
+detect_stride = 1
 is_anomaly, scores = detector.detect(
-    test_series,
-    stride=1,
-    return_scores=True
+    test['series'].to(device), stride=detect_stride, return_scores=True
 )
 
-# Results:
-# - is_anomaly: (batch, timesteps) binary predictions
-# - scores: (batch, timesteps) continuous anomaly scores
+# 6. Get results. Output index i corresponds to timestep (context_length + i*stride),
+#    so labels must be offset by context_length — not labels[:, :T_out].
+ctx, T_out = 512, scores.shape[1]
+idx = ctx + torch.arange(T_out) * detect_stride
+y_score = scores.flatten().cpu().numpy()
+y_pred  = is_anomaly.flatten().cpu().numpy()
+y_true  = test['labels'][:, idx].flatten().cpu().numpy()
+
+print(f"AUROC (threshold-free): {roc_auc_score(y_true, y_score):.3f}")
+print(f"F1 @ tau:               {f1_score(y_true, y_pred):.3f}")
+# is_anomaly = binary predictions, scores = continuous anomaly scores
 ```
+
+> For SMD (28 independent machines) fit one threshold **per machine** and compute AUROC per machine — see `compute_per_machine_auroc.py`. A single global threshold mixes error scales that are not comparable across machines.
 
 ---
 
@@ -223,9 +258,9 @@ python compute_auroc.py smd max
 - **AUROC = 0.5**: Random performance—model cannot distinguish anomalies from normal
 - **AUROC < 0.5**: Inverted ranking—model scores anomalies lower than normal (systematic failure)
 
-**Diagnostic Value**: AUROC reveals whether the model has the fundamental capacity to detect anomalies:
-- **High AUROC, Low F1**: Threshold-setting failure → Try adaptive thresholding
-- **AUROC ≈ 0.5**: Ranking failure → Requires domain fine-tuning or different approach
+**Diagnostic Value**: AUROC helps localize *where* detection fails:
+- **High AUROC, Low F1**: thresholding failure → try adaptive thresholding (this is SWaT).
+- **Aggregated AUROC ≈ 0.5 or below**: could be a genuine ranking failure *or* an aggregation artifact. Before concluding the model is blind, check the per-variate / per-dimension signal — on SMD the aggregated score was at/below chance while the per-variate signal was strong, i.e. an **aggregation** failure, not a model failure.
 
 ---
 
@@ -244,21 +279,26 @@ python compute_auroc.py smd max
 - Low F1 due to distribution shift between calibration and evaluation sets (threshold too low)
 - **Conclusion**: Threshold-setting failure, not ranking failure
 
-### SMD: Fundamental Ranking Failure
+### SMD: Signal Present, Lost in Aggregation
 
-| Aggregation | AUROC | Precision | Recall | F1 | Interpretation |
-|-------------|-------|-----------|--------|----|----|
-| Mean | **53.0%** | 1.7% | 6.1% | 2.7% | ✗ Random performance |
-| Max | **50.1%** | 9.6% | 5.1% | 6.6% | ✗ Literally a coin flip |
+Per-machine AUROC, macro-averaged over the 28 machines:
+
+| Aggregation (over 38 variates) | AUROC | Interpretation |
+|-------------|-------|----|
+| Raw mean | 48.3% | naive aggregation — at chance |
+| Raw max | 30.3% | naive aggregation — below chance (dominated by per-variate scale) |
+| Robust per-variate normalized (median/IQR) mean | **69.0%** | scale-aware, zero-shot |
+| Robust per-variate normalized (median/IQR) max | **72.9%** | scale-aware, zero-shot |
+| Best single variate per machine | 93% | upper bound (label-informed, not deployable) |
 
 **Key Findings**:
-- AUROC ≈ 0.5 indicates model cannot distinguish anomalies from normal data
-- Root cause: **Inverted separation**—anomalies are MORE predictable than normal operations
-- Server anomalies (crashes, saturation) manifest as simple patterns (flatlines, zeros)
-- Normal operations exhibit complex, multi-modal behavior
-- **Conclusion**: Core assumption "anomalous = unpredictable" does not hold for SMD
+- The standard pipeline (raw mean/max) scores at or below chance — but this is an **error-aggregation** failure, not a model failure.
+- Using SMD's per-dimension labels: TOTO's error carries anomaly signal on **all 28 machines** (best-variate AUROC > 0.7), and it lands on the genuinely-affected variates (+0.62σ vs +0.13σ for unaffected).
+- Raw aggregation destroys that signal because the 38 variates have incomparable error scales; `max` is captured by the chronically-noisiest, anomaly-irrelevant variate. Robustly normalizing each variate against its own typical level (median/IQR, still zero-shot) recovers detection to **69–73% AUROC on 24/28 machines** (the normalize-then-aggregate scheme used by GDN (Deng and Hooi, AAAI 2021)).
+- A residual ~21% of anomalies produce no forecast error at all — a genuine scoring blind spot.
+- **Conclusion**: the failure is in the aggregation step and is largely fixable, not a fundamental inability of TOTO to detect SMD anomalies.
 
-For more information about our experimentation please read blogpost_anomaly_detection.md
+For the full analysis see [the blogpost](results/TOTO-4-AD-BLOGPOST.md).
 ---
 
 ## Design Choices & Trade-offs
