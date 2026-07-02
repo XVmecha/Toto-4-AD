@@ -1,0 +1,268 @@
+{
+  "dataset": "smd",
+  "aggregation": "max",
+  "context_length": 512,
+  "fit_stride": 32,
+  "detect_stride": 8,
+  "threshold_percentile": 95.0,
+  "threshold_strategy": "per_machine",
+  "auroc_macro_avg": 0.3032987246513092,
+  "auroc_pooled": 0.3617050726974472,
+  "f1_macro_avg": 0.017568042114698333,
+  "n_machines": 28,
+  "n_machines_with_anomalies": 28,
+  "per_machine": [
+    {
+      "machine_id": 0,
+      "threshold": 12.792712211608887,
+      "auroc": 0.25321498714937607,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "n_anomaly": 335
+    },
+    {
+      "machine_id": 1,
+      "threshold": 10.514751386642455,
+      "auroc": 0.4115203011897829,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "n_anomaly": 68
+    },
+    {
+      "machine_id": 2,
+      "threshold": 13.770890951156616,
+      "auroc": 0.18853327193184433,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "n_anomaly": 101
+    },
+    {
+      "machine_id": 3,
+      "threshold": 13.885283088684082,
+      "auroc": 0.09071242294926506,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "n_anomaly": 84
+    },
+    {
+      "machine_id": 4,
+      "threshold": 12.739750194549561,
+      "auroc": 0.15165826196003093,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "n_anomaly": 13
+    },
+    {
+      "machine_id": 5,
+      "threshold": 12.41396803855896,
+      "auroc": 0.2885750923959634,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "n_anomaly": 462
+    },
+    {
+      "machine_id": 6,
+      "threshold": 12.786806631088258,
+      "auroc": 0.5026763709920048,
+      "precision": 0.1282051282051282,
+      "recall": 0.08305647840531562,
+      "f1": 0.10080645161290323,
+      "n_anomaly": 301
+    },
+    {
+      "machine_id": 7,
+      "threshold": 10.22444362640381,
+      "auroc": 0.5317516363691588,
+      "precision": 0.03241491085899514,
+      "recall": 0.2127659574468085,
+      "f1": 0.05625879043600562,
+      "n_anomaly": 94
+    },
+    {
+      "machine_id": 8,
+      "threshold": 10.761520671844483,
+      "auroc": 0.41787939181990247,
+      "precision": 0.026905829596412557,
+      "recall": 0.041379310344827586,
+      "f1": 0.03260869565217392,
+      "n_anomaly": 145
+    },
+    {
+      "machine_id": 9,
+      "threshold": 13.470049047470093,
+      "auroc": 0.6668107820476579,
+      "precision": 0.043478260869565216,
+      "recall": 0.008450704225352112,
+      "f1": 0.014150943396226414,
+      "n_anomaly": 355
+    },
+    {
+      "machine_id": 10,
+      "threshold": 13.269669294357302,
+      "auroc": 0.09041793578668797,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "n_anomaly": 35
+    },
+    {
+      "machine_id": 11,
+      "threshold": 10.109445476531983,
+      "auroc": 0.5246850715424364,
+      "precision": 0.04950495049504951,
+      "recall": 0.046948356807511735,
+      "f1": 0.048192771084337345,
+      "n_anomaly": 213
+    },
+    {
+      "machine_id": 12,
+      "threshold": 10.882201194763184,
+      "auroc": 0.37096391158646536,
+      "precision": 0.009478672985781991,
+      "recall": 0.016260162601626018,
+      "f1": 0.011976047904191617,
+      "n_anomaly": 123
+    },
+    {
+      "machine_id": 13,
+      "threshold": 13.436690425872802,
+      "auroc": 0.3118172268907563,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "n_anomaly": 40
+    },
+    {
+      "machine_id": 14,
+      "threshold": 10.282749319076538,
+      "auroc": 0.2580473727467665,
+      "precision": 0.0009643201542912247,
+      "recall": 0.017543859649122806,
+      "f1": 0.0018281535648994515,
+      "n_anomaly": 57
+    },
+    {
+      "machine_id": 15,
+      "threshold": 13.41897463798523,
+      "auroc": 0.04012517385257302,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "n_anomaly": 20
+    },
+    {
+      "machine_id": 16,
+      "threshold": 11.542868423461915,
+      "auroc": 0.49208470730704595,
+      "precision": 0.07664233576642336,
+      "recall": 0.0967741935483871,
+      "f1": 0.08553971486761712,
+      "n_anomaly": 217
+    },
+    {
+      "machine_id": 17,
+      "threshold": 12.278740644454956,
+      "auroc": 0.27471662706760086,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "n_anomaly": 23
+    },
+    {
+      "machine_id": 18,
+      "threshold": 12.739965343475342,
+      "auroc": 0.2975663625194981,
+      "precision": 0.04639175257731959,
+      "recall": 0.06870229007633588,
+      "f1": 0.055384615384615386,
+      "n_anomaly": 131
+    },
+    {
+      "machine_id": 19,
+      "threshold": 13.01983027458191,
+      "auroc": 0.002856648199445991,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "n_anomaly": 8
+    },
+    {
+      "machine_id": 20,
+      "threshold": 13.998865127563477,
+      "auroc": 0.3847282414862689,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "n_anomaly": 134
+    },
+    {
+      "machine_id": 21,
+      "threshold": 12.3712299823761,
+      "auroc": 0.20322828139754484,
+      "precision": 0.004514672686230248,
+      "recall": 0.027777777777777776,
+      "f1": 0.007766990291262135,
+      "n_anomaly": 72
+    },
+    {
+      "machine_id": 22,
+      "threshold": 11.393717098236085,
+      "auroc": 0.3221689694706112,
+      "precision": 0.027554535017221583,
+      "recall": 0.19672131147540983,
+      "f1": 0.04833836858006042,
+      "n_anomaly": 122
+    },
+    {
+      "machine_id": 23,
+      "threshold": 12.696157836914063,
+      "auroc": 0.3246375635616142,
+      "precision": 0.00847457627118644,
+      "recall": 0.019230769230769232,
+      "f1": 0.011764705882352941,
+      "n_anomaly": 52
+    },
+    {
+      "machine_id": 24,
+      "threshold": 14.239534187316895,
+      "auroc": 0.2633045609548167,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "n_anomaly": 136
+    },
+    {
+      "machine_id": 25,
+      "threshold": 13.656689167022707,
+      "auroc": 0.16034085705373674,
+      "precision": 0.004878048780487805,
+      "recall": 0.018867924528301886,
+      "f1": 0.007751937984496124,
+      "n_anomaly": 53
+    },
+    {
+      "machine_id": 26,
+      "threshold": 11.694942951202394,
+      "auroc": 0.35673271629481,
+      "precision": 0.003367003367003367,
+      "recall": 0.006329113924050633,
+      "f1": 0.004395604395604396,
+      "n_anomaly": 158
+    },
+    {
+      "machine_id": 27,
+      "threshold": 12.210672187805176,
+      "auroc": 0.310609543712992,
+      "precision": 0.0027472527472527475,
+      "recall": 0.04,
+      "f1": 0.0051413881748071984,
+      "n_anomaly": 25
+    }
+  ]
+}
